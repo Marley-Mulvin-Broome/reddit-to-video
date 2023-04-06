@@ -3,7 +3,8 @@ from configparser import ConfigParser
 from os import getcwd
 from argparse import ArgumentParser
 from os.path import join as path_join
-from itertools import islice
+from tts import TTS, google_accents
+from traceback import print_exc
 
 default_output_dir = path_join(getcwd(), "output/out.mp4")
 default_subreddit = "?"
@@ -70,6 +71,50 @@ def prompt_subreddit():
     return input()
 
 
+def prompt_voice(voices):
+    print("Enter a voice:\n", end="")
+
+    for i, voice in enumerate(voices):
+        print(f"[{i}] {voice.name}")
+
+    voice_num = -1
+
+    while voice_num < 0 or voice_num > len(voices):
+        print("Enter voice number: ", end="")
+        voice_num = int(input())
+
+    return voices[voice_num]
+
+
+def prompt_tts_engine():
+    print("Would you like to use google translate or your systems engine? (g/s): ", end="")
+    result = input()
+
+    while result != "g" and result != "s":
+        print("Invalid type. Would you like to use google translate or your systems engine? (g/s): ", end="")
+        result = input()
+
+    return result
+
+
+def prompt_google_accent():
+    print("Enter a google accent number: ", end="")
+
+    accents = []
+
+    for i, accent in enumerate(google_accents.keys()):
+        print(f"[{i}] {accent}")
+        accents.append(google_accents[accent])
+
+    accent_num = -1
+
+    while accent_num < 0 or accent_num > len(accents):
+        print("Enter accent number: ", end="")
+        accent_num = int(input())
+
+    return accents[accent_num]
+
+
 def main():
     args, parser = load_args()
     config = load_config()
@@ -78,8 +123,6 @@ def main():
 
     debug = args.debug
 
-    print("%=============RedditToVideo=============%")
-
     # Handles system args here
     if 'help' in args:
         parser.print_help()
@@ -87,9 +130,13 @@ def main():
 
     if args.version:
         print(f"Version: {config['project']['version']}")
+        exit(0)
     if args.config:
         print(
             f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
+        exit(0)
+
+    print("RedditToVideo v" + config["project"]["version"])
 
     r = Reddit(config["reddit"]["client_id"], config["reddit"]
                ["client_secret"], user_agent, debug=debug)
@@ -117,9 +164,23 @@ def main():
     selected_post = cur_posts[post_num]
 
     if args.type == "comment":
+        selected_engine = prompt_tts_engine()
+
+        tts = None
+
+        if selected_engine == "g":
+            tts = TTS(selected_engine, accent=prompt_google_accent())
+        elif selected_engine == "s":
+            tts = TTS(selected_engine)
+            tts.select_voice(prompt_voice(tts.get_voices()))
+
         for comment in selected_post.comments:
-            print(comment.body)
+            tts.save_audio(
+                comment.body, f"output/comments/comment - {comment.id}.mp3")
         # r.create_comment_video(posts[post_num], args.output, args.background)
+
+        if tts.selected_engine == "systemTTS":
+            tts.run()
 
     elif args.type == "post":
         print(selected_post.title)
@@ -132,3 +193,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Exiting...")
         exit(0)
+    except Exception as e:
+        print_exc()
+        exit(1)
