@@ -115,6 +115,31 @@ def prompt_google_accent():
     return accents[accent_num]
 
 
+def handle_comment_post(selected_post):
+    selected_engine = prompt_tts_engine()
+
+    tts = None
+
+    if selected_engine == "g":
+        tts = TTS(selected_engine, accent=prompt_google_accent())
+    elif selected_engine == "s":
+        tts = TTS(selected_engine)
+        tts.select_voice(prompt_voice(tts.get_voices()))
+
+    for comment in selected_post.comments:
+        tts.save_audio(
+            comment.body, f"output/comments/comment - {comment.id}.mp3")
+    # r.create_comment_video(posts[post_num], args.output, args.background)
+
+    if tts.selected_engine == "systemTTS":
+        tts.run()
+
+
+def handle_post_post(selected_post):
+    print(selected_post.title)
+    # r.create_post_video(posts[post_num], args.output, args.background)
+
+
 def main():
     args, parser = load_args()
     config = load_config()
@@ -164,27 +189,10 @@ def main():
     selected_post = cur_posts[post_num]
 
     if args.type == "comment":
-        selected_engine = prompt_tts_engine()
-
-        tts = None
-
-        if selected_engine == "g":
-            tts = TTS(selected_engine, accent=prompt_google_accent())
-        elif selected_engine == "s":
-            tts = TTS(selected_engine)
-            tts.select_voice(prompt_voice(tts.get_voices()))
-
-        for comment in selected_post.comments:
-            tts.save_audio(
-                comment.body, f"output/comments/comment - {comment.id}.mp3")
-        # r.create_comment_video(posts[post_num], args.output, args.background)
-
-        if tts.selected_engine == "systemTTS":
-            tts.run()
+        handle_comment_post(selected_post)
 
     elif args.type == "post":
-        print(selected_post.title)
-        # r.create_post_video(posts[post_num], args.output, args.background)
+        handle_post_post(selected_post)
 
 
 if __name__ == "__main__":
