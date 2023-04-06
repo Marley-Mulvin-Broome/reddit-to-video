@@ -123,8 +123,6 @@ def main():
 
     debug = args.debug
 
-    print("%=============RedditToVideo=============%")
-
     # Handles system args here
     if 'help' in args:
         parser.print_help()
@@ -132,9 +130,13 @@ def main():
 
     if args.version:
         print(f"Version: {config['project']['version']}")
+        exit(0)
     if args.config:
         print(
             f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
+        exit(0)
+
+    print("RedditToVideo v" + config["project"]["version"])
 
     r = Reddit(config["reddit"]["client_id"], config["reddit"]
                ["client_secret"], user_agent, debug=debug)
