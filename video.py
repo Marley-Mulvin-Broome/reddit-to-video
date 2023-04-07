@@ -61,7 +61,7 @@ class Video:
         return ImageClip(img).set_start(start_time).set_duration(
             duration).resize(size).set_pos(pos)
 
-    def load_audio_clip(self, audio: str, start_time: int, duration: int = 0, volume=1.0) -> AudioFileClip:
+    def load_audio_clip(self, audio: str, start_time: int = 0, duration: int = 0, volume=1.0) -> AudioFileClip:
         audio_clip = AudioFileClip(audio).set_start(
             start_time).set_volume(volume)
 
