@@ -61,8 +61,14 @@ class Video:
         return ImageClip(img).set_start(start_time).set_duration(
             duration).resize(size).set_pos(pos)
 
-    def load_audio_clip(self, audio: str, start_time: int, duration: int, volume=1.0) -> AudioFileClip:
-        return AudioFileClip(audio).set_start(start_time).set_duration(duration).set_volume(volume)
+    def load_audio_clip(self, audio: str, start_time: int, duration: int = 0, volume=1.0) -> AudioFileClip:
+        audio_clip = AudioFileClip(audio).set_start(
+            start_time).set_volume(volume)
+
+        if duration != 0:
+            return audio_clip.set_duration(duration)
+
+        return AudioFileClip
 
     def overlay_img(self, img: str, start_time: int, duration: int, pos=(0, 0), size=(0, 0)) -> None:
         img_clip = self.load_img_clip(img, start_time, duration, pos, size)
