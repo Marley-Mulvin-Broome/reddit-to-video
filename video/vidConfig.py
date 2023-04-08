@@ -27,6 +27,7 @@
 # }
 
 from os.path import isfile as is_file
+from os.path import isdir as is_dir
 from json import load as json_load
 from tts import TTSAccents
 from exportSettings import ExportSettings
@@ -35,7 +36,11 @@ reddit_sorts = ["relevance", "hot", "top", "new", "comments"]
 reddit_time_filters = ["all", "year", "month", "week", "day", "hour"]
 
 
-def validate_json_val(json, key, val_type, in_list=None):
+def validate_json_val(json, key, val_type, in_list=None, is_file=False, is_dir=False):
+    if is_file and is_dir:
+        raise Exception(
+            "Config: is_file and is_dir cannot both be True when validating json value (key: {key}))")
+
     if key not in json:
         raise Exception(f"Config: Missing key {key}")
     if not isinstance(json[key], val_type):
@@ -44,6 +49,24 @@ def validate_json_val(json, key, val_type, in_list=None):
     if in_list is not None:
         if json[key] not in in_list:
             raise Exception(f"Config: Invalid value for {key} ({json[key]})")
+
+    if is_file:
+        if not is_file(json[key]):
+            raise Exception(f"Config: File {json[key]} does not exist")
+
+    elif is_dir:
+        if not is_dir(json[key]):
+            raise Exception(f"Config: Directory {json[key]} does not exist")
+
+
+def load_configs(file_path):
+    if not is_file(file_path):
+        raise Exception(f"Config: File {file_path} does not exist")
+
+    with open(file_path, "r") as f:
+        json = json_load(f)
+
+    return [VideoConfig(config) for config in json["configs"]]
 
 
 class VideoConfig:
