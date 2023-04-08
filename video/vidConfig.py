@@ -11,6 +11,7 @@
 #             "limit": 100,
 #             "max_length": 200,
 #             "min_length": 30,
+#             "background_footage": "backgrounds/footage.mp4",
 #             "tts": {
 #                 "engine": "google",
 #                 "accent": "Australia"
@@ -36,8 +37,8 @@ reddit_sorts = ["relevance", "hot", "top", "new", "comments"]
 reddit_time_filters = ["all", "year", "month", "week", "day", "hour"]
 
 
-def validate_json_val(json, key, val_type, in_list=None, is_file=False, is_dir=False):
-    if is_file and is_dir:
+def validate_json_val(json, key, val_type, in_list=None, check_file=False, check_dir=False):
+    if check_file and check_dir:
         raise Exception(
             "Config: is_file and is_dir cannot both be True when validating json value (key: {key}))")
 
@@ -50,11 +51,11 @@ def validate_json_val(json, key, val_type, in_list=None, is_file=False, is_dir=F
         if json[key] not in in_list:
             raise Exception(f"Config: Invalid value for {key} ({json[key]})")
 
-    if is_file:
+    if check_file:
         if not is_file(json[key]):
             raise Exception(f"Config: File {json[key]} does not exist")
 
-    elif is_dir:
+    elif check_dir:
         if not is_dir(json[key]):
             raise Exception(f"Config: Directory {json[key]} does not exist")
 
