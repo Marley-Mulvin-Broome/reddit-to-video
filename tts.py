@@ -31,7 +31,7 @@ class googleTTS:
     def save_audio(self, text: str, filename: str) -> None:
         text = remove_links_from_text(text)
         text = remove_non_words(text)
-        print("Writing text" + text)
+        # print("Writing text" + text)
         tts = gtts.gTTS(text, lang=self.lang, tld=self.accent)
         tts.save(filename)
 
