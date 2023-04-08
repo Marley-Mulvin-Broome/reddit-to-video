@@ -90,8 +90,6 @@ class VideoConfig:
         self.settings = self.json["settings"]
 
         self.validate_settings()
-        self.validate_tts()
-        self.validate_export_settings()
 
     def validate_settings(self):
         validate_json_val(self.settings, "type", str, ["comment", "post"])
@@ -101,6 +99,11 @@ class VideoConfig:
         validate_json_val(self.settings, "limit", int)
         validate_json_val(self.settings, "max_length", int)
         validate_json_val(self.settings, "min_length", int)
+        validate_json_val(self.settings, "background_footage",
+                          str, check_file=True)
+
+        self.validate_tts()
+        self.validate_export_settings()
 
     def validate_tts(self):
         tts = self.settings["tts"]

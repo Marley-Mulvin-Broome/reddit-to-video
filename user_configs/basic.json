@@ -10,6 +10,7 @@
             "limit": 100,
             "max_length": 200,
             "min_length": 30,
+            "background_footage": "E:/YT/bgfootage/Minecraft Parkour.mp4",
             "tts": {
                 "engine": "google",
                 "accent": "Australia"
