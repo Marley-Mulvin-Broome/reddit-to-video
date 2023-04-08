@@ -48,8 +48,8 @@ class systemTTS:
     def get_voices(self) -> list:
         return self.engine.getProperty('voices')
 
-    def select_voice(self, voice) -> None:
-        self.engine.setProperty('voice', voice.id)
+    def select_voice(self, voice_id: str) -> None:
+        self.engine.setProperty('voice', voice_id)
 
     def run(self) -> None:
         self.engine.runAndWait()

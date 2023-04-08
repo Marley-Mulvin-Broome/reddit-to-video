@@ -6,6 +6,7 @@ from os.path import join as path_join
 from os.path import isdir as is_dir
 from os.path import isfile as is_file
 from os import listdir as list_dir
+from os import remove as remove_file
 from traceback import print_exc
 from post import Post
 from proglog import default_bar_logger
@@ -24,11 +25,11 @@ from exceptions import CommentTooBigError
 
 import time
 
-default_output_dir = path_join(getcwd(), "output/out.mp4")
-default_subreddit = "?"
-default_bg_dir = path_join(getcwd(), "bg_footage")
 
 CONFIG_PATH = path_join(getcwd(), "user_configs/")
+OUTPUT_PATH = "output/"
+COMMENTS_PATH = path_join(getcwd(), "output/comments/")
+POSTS_PATH = path_join(getcwd(), "output/posts/")
 
 
 def load_config():
@@ -58,29 +59,33 @@ def create_user_agent(username, version):
     return f"Python:RedditToVideo:v{version} (by /u/{username})"
 
 
+def clear_cache():
+    for file_ in list_dir(COMMENTS_PATH):
+        if file_.endswith(".png") or file_.endswith(".mp3"):
+            remove_file(path_join(COMMENTS_PATH, file_))
+
+    for file_ in list_dir(POSTS_PATH):
+        if file_.endswith(".png") or file_.endswith(".mp3"):
+            remove_file(path_join(POSTS_PATH, file_))
+
+
 def load_args():
     parser = ArgumentParser(
         description="Creates a video from top posts from a subreddit", add_help=False)
 
-    vid_args = parser.add_argument_group("Video Arguments")
-    vid_args.add_argument(
-        "-t", "--type", help="Set type of content to create [comment|post]", type=str, required=False, default="none")
-    vid_args.add_argument("-o", "--output",  help="Set output directory",
-                          type=str, required=False, default=default_output_dir)
-    vid_args.add_argument("-s", "--subreddit", help="Set subreddit",
-                          type=str, required=False, default=default_subreddit)
-    vid_args.add_argument("-bg", "--background", help="Set directory where the background footage is stored",
-                          type=str, required=False, default=default_bg_dir)
-
-    system_args = parser.add_argument_group("System Arguments")
+    system_args = parser.add_argument_group("Info Arguments")
     system_args.add_argument(
         "-h", "--help", action="help", help="Show this help message and exit")
     system_args.add_argument(
-        "-v", "--version", action="store_false", help="Show version", required=False, default=False)
+        "-v", "--version", action="store_true", help="Show version and exit", required=False, default=False)
     system_args.add_argument(
-        "-c", "--config", action="store_true", help="Show config", required=False, default=False)
+        "-c", "--config", action="store_true", help="Show config and exit", required=False, default=False)
     system_args.add_argument("-d", "--debug", action="store_true",
                              help="Sets the program to debug mode", required=False)
+    system_args.add_argument("-sv", "--system_voices", help="Shows the TTS voices on this system and exits",
+                             action="store_true", required=False, default=False)
+    system_args.add_argument(
+        "-cls", "--clear", help="Clears the cached output files - this means ALL media will be generated from the next time this is run", action="store_true", required=False, default=False)
 
     return parser.parse_args(), parser
 
@@ -218,6 +223,40 @@ def handle_post_post(selected_post):
     # r.create_post_video(posts[post_num], args.output, args.background)
 
 
+def handle_system_args(parser, args, config, user_agent):
+    # Handles system args here
+    if 'help' in args:
+        parser.print_help()
+        exit(0)
+    if args.version:
+        print(f"Version: {config['project']['version']}")
+        exit(0)
+    if args.config:
+        print(
+            f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
+        exit(0)
+    if args.system_voices:
+        tts = TTS("s")
+        voices = tts.get_voices()
+
+        for voice in voices:
+            print(voice)
+
+        exit(0)
+    if args.clear:
+        print("Clearing cache...")
+        clear_cache()
+        print("Cache cleared!")
+
+
+def check_ouput_dir():
+    if not is_dir(OUTPUT_PATH):
+        print(f"Creating output path @ {OUTPUT_PATH}")
+        make_dir(OUTPUT_PATH)
+        make_dir(POSTS_PATH)
+        make_dir(COMMENTS_PATH)
+
+
 def main():
     args, parser = load_args()
     config = load_config()
@@ -226,18 +265,9 @@ def main():
 
     debug = args.debug
 
-    # Handles system args here
-    if 'help' in args:
-        parser.print_help()
-        exit(0)
+    handle_system_args(parser, args, config, user_agent)
 
-    # if args.version:
-    #     print(f"Version: {config['project']['version']}")
-    #     exit(0)
-    # if args.config:
-    #     print(
-    #         f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
-    #     exit(0)
+    check_ouput_dir()
 
     print("RedditToVideo v" + config["project"]["version"])
 

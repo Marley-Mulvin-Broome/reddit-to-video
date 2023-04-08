@@ -8,12 +8,13 @@
             "sort": "top",
             "time": "all",
             "limit": 50,
-            "max_length": 120,
+            "max_length": 60,
             "min_length": 30,
             "background_footage": "E:/YT/bgfootage/satisfying mc prk.mp4",
             "tts": {
-                "engine": "google",
-                "accent": "AUSTRALIA"
+                "engine": "system",
+                "voice": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\TTS_MS_EN-US_ZIRA_11.0",
+                "rate": 160
             },
             "export_settings": {
                 "codec": "mpeg4",
