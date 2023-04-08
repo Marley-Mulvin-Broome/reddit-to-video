@@ -1,0 +1,26 @@
+{
+    "configs": [{
+        "name": "Askreddit comments top all time",
+        "description": "Makes a video from Reddit comments on a post",
+        "settings": {
+            "type": "comment",
+            "subreddit": "askreddit",
+            "sort": "top",
+            "time": "all",
+            "limit": 100,
+            "max_length": 200,
+            "min_length": 30,
+            "tts": {
+                "engine": "google",
+                "accent": "Australia"
+            },
+            "export_settings": {
+                "codec": "libx264",
+                "bitrate": "5000k",
+                "fps": 30,
+                "threads": 4,
+                "compression": "UltraFast"
+            }
+        }
+    }]
+}
