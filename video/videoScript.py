@@ -2,14 +2,19 @@ from scriptElement import ScriptElement
 
 
 class VideoScript:
-    def __init__(self, max_length, script_elements=None):
+    def __init__(self, max_length, min_length=0, script_elements=None):
         self.script_elements = script_elements
         self.max_length = max_length
+        self.min_length = min_length
 
         if self.script_elements is None:
             self.script_elements = []
 
         self.cur_length = 0
+
+    @property
+    def finished(self):
+        return self.cur_length >= self.min_length
 
     def can_add_script_element(self, script_element):
         return self.cur_length + script_element.duration <= self.max_length
