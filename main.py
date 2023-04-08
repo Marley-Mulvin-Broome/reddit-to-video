@@ -3,16 +3,32 @@ from configparser import ConfigParser
 from os import getcwd
 from argparse import ArgumentParser
 from os.path import join as path_join
-from tts import TTS, google_accents
+from os.path import isdir as is_dir
+from os.path import isfile as is_file
+from os import listdir as list_dir
 from traceback import print_exc
-from videoComposer import VideoComposer, VideoSettings
-from video import compression_settings
 from post import Post
 from proglog import default_bar_logger
+from video.vidConfig import VideoConfig
+from os import makedirs as make_dir
+
+from tts import TTS, TTSAccents
+
+from prompts import prompt_list, prompt_list, prompt_bool, prompt_write_file
+
+from video.videoScript import VideoScript
+from video.scriptElement import ScriptElement
+from video.compose import composeVideo
+
+from exceptions import CommentTooBigError
+
+import time
 
 default_output_dir = path_join(getcwd(), "output/out.mp4")
 default_subreddit = "?"
 default_bg_dir = path_join(getcwd(), "bg_footage")
+
+CONFIG_PATH = path_join(getcwd(), "user_configs/")
 
 
 def load_config():
@@ -24,6 +40,18 @@ def load_config():
         exit(1)
 
     return config
+
+
+def load_user_configs(dir_path):
+    if not is_dir(dir_path):
+        raise Exception(f"Config: Directory {dir_path} does not exist")
+
+    configs = []
+    for file_ in list_dir(dir_path):
+        if file_.endswith(".json"):
+            configs += VideoConfig.load_configs(path_join(dir_path, file_))
+
+    return configs
 
 
 def create_user_agent(username, version):
@@ -57,160 +85,130 @@ def load_args():
     return parser.parse_args(), parser
 
 
-def prompt_type():
-    print("Enter type of content to create [comment|post]: ", end="")
-
-    result = input()
-
-    while result != "comment" and result != "post":
-        print(
-            "Invalid type. Enter type of content to create [comment|post]: ", end="")
-        input()
-
-    return result
-
-
-def prompt_subreddit():
-    print("Enter a subreddit: ", end="")
-    return input()
-
-
-def prompt_voice(voices):
-    print("Enter a voice:\n", end="")
-
-    for i, voice in enumerate(voices):
-        print(f"[{i}] {voice.name}")
-
-    voice_num = -1
-
-    while voice_num < 0 or voice_num > len(voices):
-        print("Enter voice number: ", end="")
-        voice_num = int(input())
-
-    return voices[voice_num]
-
-
-def prompt_tts_engine():
-    print("Would you like to use google translate or your systems engine? (g/s): ", end="")
-    result = input()
-
-    while result != "g" and result != "s":
-        print("Invalid type. Would you like to use google translate or your systems engine? (g/s): ", end="")
-        result = input()
-
-    return result
-
-
-def prompt_google_accent():
-    print("Enter a google accent number: ", end="")
-
-    accents = []
-
-    for i, accent in enumerate(google_accents.keys()):
-        print(f"[{i}] {accent}")
-        accents.append(google_accents[accent])
-
-    accent_num = -1
-
-    while accent_num < 0 or accent_num > len(accents):
-        print("Enter accent number: ", end="")
-        accent_num = int(input())
-
-    return accents[accent_num]
-
-
-def prompt_background_footage():
-    print("Enter a background footage directory: ", end="")
-    return input()
-
-
 def prompt_file_name():
     print("Enter a file name for output (no extension): ", end="")
     return input()
 
 
-def prompt_max_video_length():
-    print("Please enter the max video length: ")
-    return int(input())
-
-
-def handle_comment_post(selected_post):
-    selected_engine = prompt_tts_engine()
-
+def handle_comment_post(selected_post, config: VideoConfig):
     tts = None
 
-    if selected_engine == "g":
-        tts = TTS(selected_engine, accent=prompt_google_accent())
-    elif selected_engine == "s":
-        tts = TTS(selected_engine, rate=180)
-        tts.select_voice(prompt_voice(tts.get_voices()))
+    if config.tts.engine.lower() == "google":
+        tts = TTS("g", accent="com.au")
+        # tts = TTS("g", accent=TTSAccents[config.tts.accent].value)
+    elif config.tts.engine.lower() == "system":
+        tts = TTS("s", rate=config.tts.rate)
+        tts.select_voice(config.tts.voice)
 
-    comments_audio = []
-    comments_img = []
+    print(f"Loaded {tts.selected_engine} TTS engine")
+
+    comments = []
+
+    print(f"Loaded post: '{selected_post.title}' media")
 
     post = Post(selected_post.url, selected_post.id, not selected_post.is_self)
 
-    post.screenshot_title(f"output/posts")
+    post_screenshot_out = f"output/posts/post - {selected_post.id}.png"
+    post_audio_out = f"output/posts/post - {selected_post.id}.mp3"
 
-    i = 0
+    max_failures = 3
 
-    for comment in selected_post.comments:
-        if i > 10:
+    try:
+        post.screenshot_title(post_screenshot_out)
+    except e:
+        print("Failed to screenshot post title, is it new reddit layout?")
+        print("Tryting again...")
+
+        max_failures -= 1
+
+        if max_failures == 0:
+            print("Failed to screenshot post title")
+            exit(1)
+
+        post.driver.refresh()
+
+    if not is_file(post_audio_out):
+        tts.save_audio(selected_post.title, post_audio_out)
+
+    for i, comment in enumerate(selected_post.comments):
+        if i > config.settings.limit:
             break
 
         audio_out = f"output/comments/comment - {comment.id}.mp3"
+        screenshot_out = f"output/comments/comment - {comment.id}.png"
 
-        comments_audio.append(audio_out)
+        comments.append((comment.body, screenshot_out, audio_out))
 
-        tts.save_audio(
-            comment.body, audio_out)
-        comments_img.append(post.screenshot_comment(
-            comment.id, f"output/comments/"))
-        i += 1
+        # sometimes we might have these in cache already
+        if not is_file(audio_out):
+            tts.save_audio(
+                comment.body, audio_out)
+        if not is_file(screenshot_out):
+            post.screenshot_comment(
+                comment.id, f"output/comments/")
 
     post.close()
+
+    print("Finished loading comments media")
 
     # r.create_comment_video(posts[post_num], args.output, args.background)
 
     if tts.selected_engine == "systemTTS":
+        print("Running system TTS engine")
         tts.run()
+        print("Finished running system TTS engine")
 
-    bg_footage = prompt_background_footage()
-    file_name = prompt_file_name()
+    print("Creating video script...")
+    # create video script
+    script = VideoScript(int(config.settings.max_length),
+                         int(config.settings.min_length))
 
-    v_settings = VideoSettings(dimensions=(1920, 1080),
-                               fps=30,
-                               compression=compression_settings["Low"],
-                               max_length=prompt_max_video_length(),
-                               start_time=0,
-                               max_img_size=(1500, 800),
-                               max_comment_audio_length=120,
-                               crop_region=(0, 0, 0, 0),
-                               bitrate="8M",
-                               threads=12
-                               )
+    # add post title
+    post_title_element = ScriptElement(
+        selected_post.title, post_screenshot_out, post_audio_out)
 
-    v_settings.compression['codec'] = 'h264_nvenc'
+    try:
+        script.add_script_element(post_title_element)
+    except CommentTooBigError:
+        print("Post title too big, skipping")
 
-    compose = VideoComposer(bg_footage, v_settings)
+    possible_comments = len(comments)
 
-    print(f"Video real max duration: {compose.video.duration}")
+    # add comments
+    for comment_data in comments:
+        comment_element = ScriptElement(
+            comment_data[0], comment_data[1], comment_data[2])
 
-    potential_comments = len(comments_audio)
+        print(f"Adding comment {i}/{possible_comments}", end="\r")
 
-    for i in range(len(comments_audio)):
-        print(f"Adding comments: {i}/{potential_comments}", end="\r")
-        successful = compose.add_comment(comments_img[i], comments_audio[i])
+        if not script.can_add_script_element(comment_element):
+            possible_comments -= 1
+            continue
 
-        if not successful:
-            potential_comments -= 1
+        script.add_script_element(comment_element)
 
-    print(f"Successfully added comments: {potential_comments}")
+    if (not script.finished):
+        print(
+            f"Script not finished, with duration of {script.duration} seconds.")
+        proceed = prompt_bool("Do you still want to continue? (y/n): ")
 
-    print()
-    logger = default_bar_logger('bar')
-    compose.export(f"output/{file_name}.mp4", trim_end=True, logger=logger)
-    print("Done!")
+        if not proceed:
+            print("Exiting...")
+            exit(0)
+
+    print(f"Loaded {possible_comments}/{len(comments)} possible comments")
+
+    print("Finished loading video script")
+
+    output_location = prompt_write_file("Output location: ", overwrite=True)
+
+    print("Exporting video...")
+    start_time = time.time()
+    # export video
+    composeVideo(output_location, config.settings.background_footage,
+                 script, config.export_settings, logger=default_bar_logger('bar'))
+
+    print(f"Finished exporting video in {time.time() - start_time} seconds")
 
 
 def handle_post_post(selected_post):
@@ -231,46 +229,45 @@ def main():
         parser.print_help()
         exit(0)
 
-    if args.version:
-        print(f"Version: {config['project']['version']}")
-        exit(0)
-    if args.config:
-        print(
-            f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
-        exit(0)
+    # if args.version:
+    #     print(f"Version: {config['project']['version']}")
+    #     exit(0)
+    # if args.config:
+    #     print(
+    #         f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
+    #     exit(0)
 
     print("RedditToVideo v" + config["project"]["version"])
 
+    if not is_dir(CONFIG_PATH):
+        print(f"Creating user configs directory at {CONFIG_PATH}")
+        make_dir(CONFIG_PATH)
+        print(f"Please create a user config and try again!")
+        exit(1)
+
+    print("Loading video configs...")
+    video_configs = load_user_configs(CONFIG_PATH)
+
+    if len(video_configs) == 0:
+        print(f"No video configs found in {CONFIG_PATH}")
+        exit(1)
+
+    chosen_config: VideoConfig = prompt_list(
+        list(map(lambda config: (config.name, config), video_configs)), "Select a video config: ")
+
     r = Reddit(config["reddit"]["client_id"], config["reddit"]
-               ["client_secret"], user_agent, debug=debug)
+               ["client_secret"], user_agent, debug=False)
 
-    if args.type == "none":
-        args.type = prompt_type()
+    posts = r.get_top_posts(chosen_config.settings.subreddit, limit=10)
 
-    if args.subreddit == default_subreddit:
-        args.subreddit = prompt_subreddit()
+    chosen_post = prompt_list(
+        list(map(lambda post: (post.title, post), posts)), "Select a post: ")
 
-    posts = r.get_top_posts(args.subreddit, limit=10)
+    if chosen_config.settings["type"].lower() == "comment":
+        handle_comment_post(chosen_post, chosen_config)
 
-    cur_posts = []
-
-    for i, post in enumerate(posts):
-        cur_posts.append(post)
-        print(f"[{i}] {post.title} ({post.score})")
-
-    post_num = -1
-
-    while post_num < 0 or post_num > 9:
-        print("Enter post number: ", end="")
-        post_num = int(input())
-
-    selected_post = cur_posts[post_num]
-
-    if args.type == "comment":
-        handle_comment_post(selected_post)
-
-    elif args.type == "post":
-        handle_post_post(selected_post)
+    elif chosen_config.settings["type"].lower() == "post":
+        raise Exception("Post type not implemented yet")
 
 
 if __name__ == "__main__":
