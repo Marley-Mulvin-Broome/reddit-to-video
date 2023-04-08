@@ -1,16 +1,17 @@
 import pyttsx3
 import gtts
 from utility import remove_links_from_text
+from enum import Enum
 
-google_accents = {
-    'Australia': 'com.au',
-    'United Kingdom': 'co.uk',
-    'United States': 'us',
-    'Canada': 'ca',
-    'India': 'co.in',
-    'Ireland': 'ie',
-    'South Africa': 'co.za',
-}
+
+class TTSAccents(Enum):
+    AUSTRALIA = 'com.au'
+    UK = 'co.uk'
+    US = 'us'
+    CANADA = 'ca'
+    INDIA = 'co.in'
+    IRELAND = 'ie'
+    SOUTH_AFRICA = 'co.za'
 
 
 class googleTTS:
