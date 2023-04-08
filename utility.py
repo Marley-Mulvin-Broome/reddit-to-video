@@ -49,3 +49,10 @@ def can_write_to_file(file_path: str) -> bool:
 def remove_non_words(text: str) -> str:
     text = re.sub(r'[^\w\s]|_', '', text)
     return text
+
+
+# split_sentences regex from https://stackoverflow.com/questions/25735644/python-regex-for-splitting-text-into-sentences-sentence-tokenizing
+
+
+def split_sentences(text: str) -> list:
+    return re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
