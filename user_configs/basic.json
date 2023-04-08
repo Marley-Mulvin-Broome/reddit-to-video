@@ -7,10 +7,10 @@
             "subreddit": "askreddit",
             "sort": "top",
             "time": "all",
-            "limit": 10,
-            "max_length": 61,
+            "limit": 50,
+            "max_length": 120,
             "min_length": 30,
-            "background_footage": "E:/YT/bgfootage/Minecraft Parkour.mp4",
+            "background_footage": "E:/YT/bgfootage/satisfying mc prk.mp4",
             "tts": {
                 "engine": "google",
                 "accent": "AUSTRALIA"

@@ -130,6 +130,8 @@ def handle_comment_post(selected_post, config: VideoConfig):
     if not is_file(post_audio_out):
         tts.save_audio(selected_post.title, post_audio_out)
 
+    selected_post.comments.replace_more(limit=0)
+
     for i, comment in enumerate(selected_post.comments):
         if i > config.settings.limit:
             break
