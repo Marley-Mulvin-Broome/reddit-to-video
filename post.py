@@ -69,5 +69,16 @@ class Post:
         return [self.screenshot_comment(comment_id, path_join(
             output_dir, f"comment - {comment_id}.png")) for comment_id in comment_ids]
 
+    def screenshot_title(self, output_dir: str) -> str:
+        title = self.driver.find_element(
+            By.XPATH, "//div[@data-testid='post-container']")
+
+        destination = path_join(
+            output_dir, f"post title - {self.post_id}.png")
+
+        title.screenshot(destination)
+
+        return destination
+
     def close(self):
         self.driver.close()

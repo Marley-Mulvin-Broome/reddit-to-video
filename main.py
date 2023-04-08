@@ -5,6 +5,10 @@ from argparse import ArgumentParser
 from os.path import join as path_join
 from tts import TTS, google_accents
 from traceback import print_exc
+from videoComposer import VideoComposer, VideoSettings
+from video import compression_settings
+from post import Post
+from proglog import default_bar_logger
 
 default_output_dir = path_join(getcwd(), "output/out.mp4")
 default_subreddit = "?"
@@ -115,6 +119,21 @@ def prompt_google_accent():
     return accents[accent_num]
 
 
+def prompt_background_footage():
+    print("Enter a background footage directory: ", end="")
+    return input()
+
+
+def prompt_file_name():
+    print("Enter a file name for output (no extension): ", end="")
+    return input()
+
+
+def prompt_max_video_length():
+    print("Please enter the max video length: ")
+    return int(input())
+
+
 def handle_comment_post(selected_post):
     selected_engine = prompt_tts_engine()
 
@@ -123,16 +142,75 @@ def handle_comment_post(selected_post):
     if selected_engine == "g":
         tts = TTS(selected_engine, accent=prompt_google_accent())
     elif selected_engine == "s":
-        tts = TTS(selected_engine)
+        tts = TTS(selected_engine, rate=180)
         tts.select_voice(prompt_voice(tts.get_voices()))
 
+    comments_audio = []
+    comments_img = []
+
+    post = Post(selected_post.url, selected_post.id, not selected_post.is_self)
+
+    post.screenshot_title(f"output/posts")
+
+    i = 0
+
     for comment in selected_post.comments:
+        if i > 10:
+            break
+
+        audio_out = f"output/comments/comment - {comment.id}.mp3"
+
+        comments_audio.append(audio_out)
+
         tts.save_audio(
-            comment.body, f"output/comments/comment - {comment.id}.mp3")
+            comment.body, audio_out)
+        comments_img.append(post.screenshot_comment(
+            comment.id, f"output/comments/"))
+        i += 1
+
+    post.close()
+
     # r.create_comment_video(posts[post_num], args.output, args.background)
 
     if tts.selected_engine == "systemTTS":
         tts.run()
+
+    bg_footage = prompt_background_footage()
+    file_name = prompt_file_name()
+
+    v_settings = VideoSettings(dimensions=(1920, 1080),
+                               fps=30,
+                               compression=compression_settings["Low"],
+                               max_length=prompt_max_video_length(),
+                               start_time=0,
+                               max_img_size=(1500, 800),
+                               max_comment_audio_length=120,
+                               crop_region=(0, 0, 0, 0),
+                               bitrate="8M",
+                               threads=12
+                               )
+
+    v_settings.compression['codec'] = 'h264_nvenc'
+
+    compose = VideoComposer(bg_footage, v_settings)
+
+    print(f"Video real max duration: {compose.video.duration}")
+
+    potential_comments = len(comments_audio)
+
+    for i in range(len(comments_audio)):
+        print(f"Adding comments: {i}/{potential_comments}", end="\r")
+        successful = compose.add_comment(comments_img[i], comments_audio[i])
+
+        if not successful:
+            potential_comments -= 1
+
+    print(f"Successfully added comments: {potential_comments}")
+
+    print()
+    logger = default_bar_logger('bar')
+    compose.export(f"output/{file_name}.mp4", trim_end=True, logger=logger)
+    print("Done!")
 
 
 def handle_post_post(selected_post):

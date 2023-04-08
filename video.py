@@ -3,7 +3,7 @@ from moviepy.editor import VideoFileClip, ImageClip, AudioFileClip, CompositeAud
 compression_settings = {
     "Low": {
         "codec": "libx264",
-        "preset": "veryfast",
+        "preset": "ultrafast",
         "audio_codec": "aac",
         "audio_bitrate": "192k"
     },
@@ -29,13 +29,18 @@ compression_settings = {
 
 
 class Video:
-    def __init__(self, source_clip: str, load_video_audio: bool = False, subsection=(0, 0)):
-        # source and subclip will be the same unless there is a subsection
-        self._source_clip: VideoFileClip = VideoFileClip(
-            source_clip, audio=load_video_audio)
-        self._clip: VideoFileClip = self._source_clip
+    def __init__(self, video_clip: VideoFileClip, subsection=(0, 0)):
+        self._source_clip: VideoFileClip = video_clip
+        self._clip: VideoFileClip = video_clip
         self.subsection = subsection
         self.audio = []
+
+    @staticmethod
+    def from_path(source_clip: str, load_video_audio: bool = False, subsection=(0, 0)):
+        video_clip: VideoFileClip = VideoFileClip(
+            source_clip, audio=load_video_audio, )
+
+        return Video(video_clip, subsection)
 
     @property
     def subsection(self) -> tuple:
@@ -50,6 +55,17 @@ class Video:
                 subsection[0], subsection[1])
 
     @property
+    def cur_clip_subsection(self) -> tuple:
+        return (self._clip.start, self._clip.end)
+
+    @cur_clip_subsection.setter
+    def cur_clip_subsection(self, subsection):
+        if subsection[0] == 0 and subsection[1] == 0:
+            return
+
+        self._clip = self._clip.subclip(subsection[0], subsection[1])
+
+    @property
     def width(self) -> int:
         return self._clip.w
 
@@ -61,6 +77,9 @@ class Video:
     def duration(self) -> int:
         return self._clip.duration
 
+    def subsect_new(self, start_time: int, end_time: int):
+        return Video(self._clip.subclip(start_time, end_time))
+
     def crop(self, region: tuple) -> None:
         self._clip = self._clip.crop(region)
 
@@ -71,27 +90,26 @@ class Video:
         return ImageClip(img).set_start(start_time).set_duration(
             duration).resize(width=size[0], height=size[1]).set_pos(pos)
 
-    def load_audio_clip(self, audio: str, start_time: int = 0, duration: int = 0, volume=1.0) -> AudioFileClip:
+    def load_audio_clip(self, audio: str, start_time: int = 0, volume=1.0) -> AudioFileClip:
         audio_clip = AudioFileClip(audio).set_start(
             start_time).volumex(volume)
-
-        if duration != 0:
-            return audio_clip.set_duration(duration)
 
         return audio_clip
 
     def overlay_img(self, img: str, start_time: int, duration: int, pos=(0, 0), size=(0, 0)) -> None:
         img_clip = self.load_img_clip(img, start_time, duration, pos, size)
-        self._clip = CompositeVideoClip([self._clip, img_clip])
+        self._clip = CompositeVideoClip(
+            [self._clip, img_clip], use_bgclip=True)
 
-    def overlay_audio(self, audio: str, start_time: int, duration: int) -> None:
-        audio_clip = self.load_audio_clip(audio, start_time, duration)
+    def overlay_audio(self, audio: str, start_time: int) -> None:
+        audio_clip = self.load_audio_clip(audio, start_time)
         self.audioappend(audio_clip)
 
     def overlay_img_with_audio(self, img: str, audio: str, start_time: int, duration: int, pos=(0, 0), size=(0, 0)) -> None:
         img_clip = self.load_img_clip(img, start_time, duration, pos, size)
-        audio_clip = self.load_audio_clip(audio, start_time, duration)
-        self._clip = CompositeVideoClip([self._clip, img_clip])
+        audio_clip = self.load_audio_clip(audio, start_time)
+        self._clip = CompositeVideoClip(
+            [self._clip, img_clip])
         self.audio.append(audio_clip)
 
     def overlay_img_with_audio(self, img: ImageClip, audio: AudioFileClip):
@@ -102,8 +120,15 @@ class Video:
         self.export(output, **compression_settings, fps=fps, logger=logger, bitrate=bitrate,
                     threads=threads)
 
-    def export(self, output: str, logger=None, bitrate="8M", threads=16, fps=60, codec="libx264", preset="veryslow", audio_codec="aac", audio_bitrate="192k") -> None:
-        self._clip = self._clip.set_audio(CompositeAudioClip(self.audio))
+    def apply_audio(self) -> None:
+        if (len(self.audio) > 0):
+            self._clip = self._clip.set_audio(CompositeAudioClip(self.audio))
+
+    def export(self, output: str, logger=None, bitrate="8M", threads=4, fps=24, codec="libx264", preset="veryslow", audio_codec="aac", audio_bitrate="192k") -> None:
+        self.apply_audio()
+        del self.audio
+        del self._source_clip
+
         self._clip.write_videofile(output, fps=fps, codec=codec, preset=preset,
                                    audio_codec=audio_codec, audio_bitrate=audio_bitrate, bitrate=bitrate, threads=threads, logger=logger)
 
