@@ -3,7 +3,7 @@ from os.path import isfile as is_file
 
 
 class ScriptElement:
-    def __init__(self, id_, text, visual_path, audio_path):
+    def __init__(self, text, visual_path, audio_path, id_=-1):
         if not is_file(visual_path):
             raise Exception(
                 f"ScriptElement() visual_path {visual_path} is not a file")
@@ -34,4 +34,4 @@ class ScriptElement:
 
     @property
     def is_video(self):
-        return not self.visual_path.endswith(".png")
+        return self.visual_path.endswith(".mp4") or self.visual_path.endswith(".avi")

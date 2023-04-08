@@ -7,7 +7,7 @@ from os.path import isfile as is_file
 # DO NOT import from moviepy.editor (has overhead)
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.video.VideoClip import ImageClip
-from moviepy.audio.io import AudioFileClip
+from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from moviepy.video.compositing.concatenate import concatenate_videoclips
 
@@ -77,7 +77,7 @@ def composeVideo(output_file: str, background_footage: str, script: VideoScript,
 
     # create final clip
     final_clip = CompositeVideoClip(
-        clips=[background_clip, overlay], size=background_clip.size).set_audio(overlay.audio)
+        clips=[background_clip, overlay], size=background_clip.size).set_audio(overlay.audio).set_duration(overlay.duration)
 
     # export video
     final_clip.write_videofile(

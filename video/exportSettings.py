@@ -20,7 +20,7 @@ class ExportSettings:
     codec: str = "libx264"
     bitrate: str = "5000k"
 
-    compression: Compression = Compression.SuperFast
+    compression: str = Compression.SuperFast.value
 
     fps: int = 30
     threads: int = 4
@@ -29,7 +29,7 @@ class ExportSettings:
         return {
             "codec": self.codec,
             "bitrate": self.bitrate,
-            "compression": self.compression.value,
+            "preset": self.compression,
             "fps": self.fps,
             "threads": self.threads
         }

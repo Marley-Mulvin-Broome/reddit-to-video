@@ -7,19 +7,19 @@
             "subreddit": "askreddit",
             "sort": "top",
             "time": "all",
-            "limit": 100,
-            "max_length": 200,
+            "limit": 10,
+            "max_length": 61,
             "min_length": 30,
             "background_footage": "E:/YT/bgfootage/Minecraft Parkour.mp4",
             "tts": {
                 "engine": "google",
-                "accent": "Australia"
+                "accent": "AUSTRALIA"
             },
             "export_settings": {
-                "codec": "libx264",
-                "bitrate": "5000k",
-                "fps": 30,
-                "threads": 4,
+                "codec": "mpeg4",
+                "bitrate": "16000k",
+                "fps": 60,
+                "threads": 6,
                 "compression": "UltraFast"
             }
         }

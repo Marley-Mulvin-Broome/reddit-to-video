@@ -1,6 +1,6 @@
 import pyttsx3
 import gtts
-from utility import remove_links_from_text
+from utility import remove_links_from_text, remove_non_words
 from enum import Enum
 
 
@@ -13,6 +13,15 @@ class TTSAccents(Enum):
     IRELAND = 'ie'
     SOUTH_AFRICA = 'co.za'
 
+    # from https://stackoverflow.com/questions/29795488/how-to-test-if-an-enum-member-with-a-certain-name-exists
+    @classmethod
+    def has_key(cls, name):
+        return name in cls.__members__
+
+    @classmethod
+    def get_keys(cls):
+        return cls.__members__.keys()
+
 
 class googleTTS:
     def __init__(self, lang: str = 'en', accent: str = 'com.au'):
@@ -21,6 +30,8 @@ class googleTTS:
 
     def save_audio(self, text: str, filename: str) -> None:
         text = remove_links_from_text(text)
+        text = remove_non_words(text)
+        print("Writing text" + text)
         tts = gtts.gTTS(text, lang=self.lang, tld=self.accent)
         tts.save(filename)
 
