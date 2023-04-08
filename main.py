@@ -5,8 +5,6 @@ from argparse import ArgumentParser
 from os.path import join as path_join
 from tts import TTS, google_accents
 from traceback import print_exc
-from videoComposer import VideoComposer, VideoSettings
-from video import compression_settings
 from post import Post
 from proglog import default_bar_logger
 
@@ -174,43 +172,6 @@ def handle_comment_post(selected_post):
 
     if tts.selected_engine == "systemTTS":
         tts.run()
-
-    bg_footage = prompt_background_footage()
-    file_name = prompt_file_name()
-
-    v_settings = VideoSettings(dimensions=(1920, 1080),
-                               fps=30,
-                               compression=compression_settings["Low"],
-                               max_length=prompt_max_video_length(),
-                               start_time=0,
-                               max_img_size=(1500, 800),
-                               max_comment_audio_length=120,
-                               crop_region=(0, 0, 0, 0),
-                               bitrate="8M",
-                               threads=12
-                               )
-
-    v_settings.compression['codec'] = 'h264_nvenc'
-
-    compose = VideoComposer(bg_footage, v_settings)
-
-    print(f"Video real max duration: {compose.video.duration}")
-
-    potential_comments = len(comments_audio)
-
-    for i in range(len(comments_audio)):
-        print(f"Adding comments: {i}/{potential_comments}", end="\r")
-        successful = compose.add_comment(comments_img[i], comments_audio[i])
-
-        if not successful:
-            potential_comments -= 1
-
-    print(f"Successfully added comments: {potential_comments}")
-
-    print()
-    logger = default_bar_logger('bar')
-    compose.export(f"output/{file_name}.mp4", trim_end=True, logger=logger)
-    print("Done!")
 
 
 def handle_post_post(selected_post):

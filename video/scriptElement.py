@@ -23,7 +23,7 @@ class ScriptElement:
 
     @property
     def visual_duration(self):
-        if self.visual_path.endswith(".png"):
+        if not self.is_video:
             return 0
 
         return get_video_duration(self.visual_path)
@@ -31,3 +31,7 @@ class ScriptElement:
     @property
     def audio_duration(self):
         return get_audio_duration(self.audio_path)
+
+    @property
+    def is_video(self):
+        return not self.visual_path.endswith(".png")

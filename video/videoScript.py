@@ -1,7 +1,8 @@
 from scriptElement import ScriptElement
 
+
 class VideoScript:
-    def __init__(self, max_length, script_elements = None):
+    def __init__(self, max_length, script_elements=None):
         self.script_elements = script_elements
         self.max_length = max_length
 
@@ -9,7 +10,6 @@ class VideoScript:
             self.script_elements = []
 
         self.cur_length = 0
-
 
     def can_add_script_element(self, script_element):
         return self.cur_length + script_element.duration <= self.max_length
@@ -27,7 +27,8 @@ class VideoScript:
             if script_element.id == id_:
                 return script_element
 
-        raise Exception(f"VideoScript() script element with id {id_} not found")
+        raise Exception(
+            f"VideoScript() script element with id {id_} not found")
 
     def remove_script_element(self, id_):
         element = self.get_script_element(id_)
@@ -35,3 +36,6 @@ class VideoScript:
         self.cur_length -= element.duration
 
         self.script_elements.remove(element)
+
+    def __len__(self):
+        return len(self.script_elements)
