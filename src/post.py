@@ -20,6 +20,9 @@ class Post:
     def has_image(self) -> bool:
         return self._has_image
 
+    def reload(self):
+        self.driver.get(self.url)
+
     def download_image(self, output_dir: str) -> str:
         if not self.has_image:
             raise Exception("download_image() Post has no image")

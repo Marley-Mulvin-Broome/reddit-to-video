@@ -56,3 +56,19 @@ def remove_non_words(text: str) -> str:
 
 def split_sentences(text: str) -> list:
     return re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
+
+
+from contextlib import contextmanager
+import sys, os
+
+# from https://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:  
+            yield
+        finally:
+            sys.stdout = old_stdout

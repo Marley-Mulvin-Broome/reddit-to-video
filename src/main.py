@@ -13,7 +13,7 @@ from proglog import default_bar_logger
 from video.vidConfig import VideoConfig
 from os import makedirs as make_dir
 
-from tts import TTS, TTSAccents
+from tts import get_tts_engine
 
 from prompts import prompt_list, prompt_list, prompt_bool, prompt_write_file
 
@@ -24,6 +24,9 @@ from video.compose import composeVideo
 from exceptions import CommentTooBigError
 
 import time
+
+import logging
+logging.basicConfig(level=logging.WARNING)
 
 
 CONFIG_PATH = path_join(getcwd(), "user_configs/")
@@ -96,16 +99,9 @@ def prompt_file_name():
 
 
 def handle_comment_post(selected_post, config: VideoConfig):
-    tts = None
+    tts = get_tts_engine(config.tts.engine, **config.tts.kwargs)
 
-    if config.tts.engine.lower() == "google":
-        tts = TTS("g", accent="com.au")
-        # tts = TTS("g", accent=TTSAccents[config.tts.accent].value)
-    elif config.tts.engine.lower() == "system":
-        tts = TTS("s", rate=config.tts.rate)
-        tts.select_voice(config.tts.voice)
-
-    print(f"Loaded {tts.selected_engine} TTS engine")
+    print(f"Loaded {repr(tts)} TTS engine")
 
     comments = []
 
@@ -120,7 +116,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
 
     try:
         post.screenshot_title(post_screenshot_out)
-    except e:
+    except Exception as e:
         print("Failed to screenshot post title, is it new reddit layout?")
         print("Tryting again...")
 
@@ -130,7 +126,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
             print("Failed to screenshot post title")
             exit(1)
 
-        post.driver.refresh()
+        post.reload()
 
     if not is_file(post_audio_out):
         tts.save_audio(selected_post.title, post_audio_out)
@@ -160,7 +156,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
 
     # r.create_comment_video(posts[post_num], args.output, args.background)
 
-    if tts.selected_engine == "systemTTS":
+    if repr(tts) == "SystemTTS":
         print("Running system TTS engine")
         tts.run()
         print("Finished running system TTS engine")
@@ -236,7 +232,15 @@ def handle_system_args(parser, args, config, user_agent):
             f"Config:\n[client_id:{config['reddit']['client_id']}]\n[client_secret:{config['reddit']['client_secret']}]\n[user_agent:{user_agent}]")
         exit(0)
     if args.system_voices:
-        tts = TTS("s")
+        print("System voices:")
+        tts = get_tts_engine("s")
+        voices = tts.get_voices()
+
+        for voice in voices:
+            print(voice)
+
+        print("Coqui voices:")
+        tts = get_tts_engine("c")
         voices = tts.get_voices()
 
         for voice in voices:

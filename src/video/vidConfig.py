@@ -30,8 +30,8 @@
 from os.path import isfile as is_file
 from os.path import isdir as is_dir
 from json import load as json_load
-from tts import TTSAccents
-from .exportSettings import ExportSettings, Compression
+from tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
+from .exportSettings import ExportSettings
 
 reddit_sorts = ["relevance", "hot", "top", "new", "comments"]
 reddit_time_filters = ["all", "year", "month", "week", "day", "hour"]
@@ -106,15 +106,25 @@ class VideoConfig:
 
     def validate_tts(self):
         tts = self._settings["tts"]
-        validate_json_val(tts, "engine", str, ["google", "system"])
+        validate_json_val(tts, "engine", str, all_tts_names)
+        validate_json_val(tts, "kwargs", dict)
 
-        if tts["engine"] == "google":
-            validate_json_val(tts, "accent", str,
+        self.tts_kwargs = tts["kwargs"]
+
+        if tts["engine"] in google_names:
+            validate_json_val(self.tts_kwargs, "accent", str,
                               in_list=TTSAccents.get_keys())
+            self.tts_kwargs["accent"] = TTSAccents[self.tts_kwargs["accent"]].value
 
-        elif tts["engine"] == "system":
-            validate_json_val(tts, "rate", int)
-            validate_json_val(tts, "voice", str)
+        elif tts["engine"] in system_names:
+            validate_json_val(self.tts_kwargs, "rate", int)
+            validate_json_val(self.tts_kwargs, "voice", str)
+
+        elif tts["engine"] in coqui_names:
+            validate_json_val(self.tts_kwargs, "model", str)
+
+        else:
+            raise Exception(f"Config: Invalid TTS engine {tts['engine']}")
 
     def validate_export_settings(self):
         export_settings = self._settings["export_settings"]
