@@ -7,7 +7,7 @@
             "subreddit": "askreddit",
             "sort": "top",
             "time": "all",
-            "limit": 50,
+            "limit": 10,
             "max_length": 60,
             "min_length": 30,
             "background_footage": "E:/YT/bgfootage/satisfying mc prk.mp4",
