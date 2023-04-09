@@ -17,4 +17,4 @@ The current options for text to speech at the moment are: your systems, and goog
 Run main.py with the flag -sv to see a list of your available system voices. From there, copy the ID and set it to the voice value in the TTS json key
 
 ## AI generated text
-Sadly I do not have any experience with AI models and ML, however if anyone does and would like to contribute that to this project then I would be more than happy to do that!
+Will be working on implementing support for 
