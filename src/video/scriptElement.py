@@ -1,5 +1,6 @@
 from utility import get_video_duration, get_audio_duration
 from os.path import isfile as is_file
+from exceptions import NoAudioError
 
 
 class ScriptElement:
@@ -7,9 +8,10 @@ class ScriptElement:
         if not is_file(visual_path):
             raise Exception(
                 f"ScriptElement() visual_path {visual_path} is not a file")
-        if not is_file(audio_path):
-            raise Exception(
-                f"ScriptElement() audio_path {audio_path} is not a file")
+        if audio_path is not None and audio_path != "":
+            if not is_file(audio_path):
+                raise Exception(
+                    f"ScriptElement() audio_path {audio_path} is not a file")
 
         self.id = id_
         self.text = text
@@ -30,6 +32,13 @@ class ScriptElement:
 
     @property
     def audio_duration(self):
+        if self.audio_path is None or self.audio_path == "":
+            if self.is_video:
+                return self.visual_duration
+            else:
+                raise NoAudioError(
+                    "ScriptElement() has no audio but is not a video")
+
         return get_audio_duration(self.audio_path)
 
     @property

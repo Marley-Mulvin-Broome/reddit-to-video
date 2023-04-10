@@ -1,9 +1,19 @@
-from moviepy.video.io.VideoFileClip import VideoFileClip
-from moviepy.audio.io.AudioFileClip import AudioFileClip
-from requests import get
+import os
+import sys
+import subprocess
 import re
 
 from os.path import isfile as is_file
+
+from contextlib import contextmanager
+
+from requests import get
+
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.audio.io.AudioFileClip import AudioFileClip
+
+
+from exceptions import OsNotSupportedError
 
 
 def remove_links_from_text(text: str) -> str:
@@ -41,6 +51,7 @@ def can_write_to_file(file_path: str) -> bool:
     try:
         f = open(file_path, "w")
         f.close()
+        os.remove(file_path)
         return True
     except:
         return False
@@ -58,17 +69,29 @@ def split_sentences(text: str) -> list:
     return re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
 
 
-from contextlib import contextmanager
-import sys, os
-
 # from https://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python
+
 
 @contextmanager
 def suppress_stdout():
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
-        try:  
+        try:
             yield
         finally:
             sys.stdout = old_stdout
+
+
+def preview_video(video_path: str) -> None:
+    if not is_file(video_path):
+        raise FileExistsError(
+            f"preview_video() video_path {video_path} is not a file")
+
+    if os.name == "nt":
+        os.startfile(video_path)
+    elif os.name == "posix":
+        subprocess.Popen(["xdg-open", video_path])
+    else:
+        raise OsNotSupportedError(
+            f"preview_video() os {os.name} is not supported for previewing videos")

@@ -2,7 +2,6 @@ import pyttsx3
 import gtts
 from utility import remove_links_from_text, remove_non_words
 from enum import Enum
-from TTS.api import TTS as coqui
 
 
 class TTSAccents(Enum):
@@ -44,6 +43,9 @@ class ttsEngine:
 
 class coquiTTS(ttsEngine):
     def __init__(self, model: str = "tts_models/multilingual/multi-dataset/your_tts", speaker_file: str = None, **kwargs):
+        # importing this here because it takes a while to load
+        from TTS.api import TTS as coqui
+
         self.model = model
         self.tts = coqui(model, progress_bar=False)
 

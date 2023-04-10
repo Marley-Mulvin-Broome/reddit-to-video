@@ -31,6 +31,9 @@ class Reddit:
     def get_top_posts(self, subreddit, time_filter="all", limit=10):
         return self._reddit.subreddit(subreddit).top(time_filter=time_filter, limit=limit)
 
+    def get_hot_posts(self, subreddit, limit=10):
+        return self._reddit.subreddit(subreddit).hot(limit=limit)
+
     @property
     def user(self):
         return self._reddit.user.me()

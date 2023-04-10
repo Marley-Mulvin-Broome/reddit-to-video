@@ -1,0 +1,118 @@
+from requests import get
+from redvid import Downloader
+from pytube import YouTube
+from utility import can_write_to_file
+from bs4 import BeautifulSoup
+from .urlValidator import is_valid_kick_clip, is_valid_streamable_clip, is_valid_twitch_clip_url, is_valid_youtube_url, ClipService
+
+DEFAULT_REQ_TIMEOUT = 3000
+
+
+def retreieve_content_from_url(url: str, timeout: int = DEFAULT_REQ_TIMEOUT) -> bytes:
+    response = get(url, timeout=timeout)
+
+    if response.status_code != 200:
+        raise Exception(
+            f"retreieve_content_from_url() response status code is {response.status_code}")
+
+    return response.content
+
+
+def get_html_from_url(url: str, timeout: int = 3000) -> str:
+    response = get(url, timeout=timeout)
+
+    if response.status_code != 200:
+        raise Exception(
+            f"get_html_from_url() response status code is {response.status_code}")
+
+    return response.text
+
+
+def get_soup_from_url(url: str, timeout: int = 3000) -> BeautifulSoup:
+    html = get_html_from_url(url, timeout=timeout)
+    return BeautifulSoup(html, "html.parser")
+
+
+def download_youtube_video(url: str, output: str):
+    # if not can_write_to_file(output):
+    #     raise Exception(
+    #         f"download_youtube_video() output {output} is not a path that can be written to")
+
+    youtube_obj = YouTube(url)
+    youtube_obj.streams.get_highest_resolution().download(filename=output)
+
+
+def download_streamable_video(url: str, output: str):
+    if not is_valid_streamable_clip(url):
+        raise Exception(
+            f"download_streamable_video() url {url} is not a valid streamable url")
+
+    return download_from_video_tag(url, output)
+
+
+def download_kick_video(url: str, output: str):
+    if not is_valid_kick_clip(url):
+        raise Exception(
+            f"download_kick_video() url {url} is not a valid kick url")
+
+    return download_from_video_tag(url, output)
+
+
+def download_twitch_clip(url: str, output: str):
+    if not is_valid_twitch_clip_url(url):
+        raise Exception(
+            f"download_twitch_clip() url {url} is not a valid twitch clip url")
+
+    return download_from_video_tag(url, output)
+
+
+def download_from_video_tag(url: str, output: str):
+    if not can_write_to_file(output):
+        raise Exception(
+            f"download_from_video_tag() output {output} is not a path that can be written to")
+
+    # get html
+    html = get_soup_from_url(url)
+    # find video tag in entire html
+    video = html.find_all("video")[0]
+
+    if video is None:
+        raise Exception(
+            f"download_from_video_tag() could not find video tag in html")
+
+    # get the src attribute
+    src = video['src']
+    # download the that src
+    content = retreieve_content_from_url(src)
+    # write to file
+    with open(output, "wb") as f:
+        f.write(content)
+
+
+def download_reddit_video(url: str, output: str):
+    if not can_write_to_file(output):
+        raise Exception(
+            f"download_reddit_video() output {output} is not a path that can be written to")
+
+    reddit = Downloader()
+    reddit.url(url)
+    reddit.log = False
+    reddit.file_name = output
+    reddit.max = True
+    reddit.download()
+
+
+def download_by_service(url: str, clip_server: ClipService, output_path: str) -> None:
+    if clip_server.value == ClipService.TWITCH.value:
+        download_twitch_clip(url, output_path)
+    elif clip_server.value == ClipService.STREAMABLE.value:
+        download_streamable_video(url, output_path)
+    elif clip_server.value == ClipService.KICK.value:
+        download_kick_video(url, output_path)
+    elif clip_server.value == ClipService.YOUTUBE.value:
+        download_youtube_video(url, output_path)
+    elif clip_server.value == ClipService.REDDIT.value:
+        download_reddit_video(url, output_path)
+    else:
+        raise Exception(
+            f"download_by_service() clip_server {clip_server} is not a valid clip server")
