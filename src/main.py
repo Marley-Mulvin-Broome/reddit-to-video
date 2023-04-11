@@ -179,6 +179,13 @@ def check_ouput_dir():
 
 def main():
     """Entry point for reddit to video"""
+    from reddit_to_video.scraping.scraper import download_twitch_clip
+
+    download_twitch_clip(
+        "https://clips.twitch.tv/KathishTubularGoshawkOpieOP-Ld8u0WERBWYsXk8G", "output/twitch_clip.mp4")
+
+    exit_program(0)
+
     args, parser = load_args()
     config = load_config()
     user_agent = create_user_agent(
