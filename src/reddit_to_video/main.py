@@ -1,19 +1,21 @@
-from reddit import Reddit
+from reddit_to_video.reddit import Reddit
+from reddit_to_video.video.vidConfig import VideoConfig
+from reddit_to_video.postHandlers import handle_comment_post, handle_video_post
+from reddit_to_video.prompts import prompt_list, prompt_list
+from reddit_to_video.tts import get_tts_engine
+
 from configparser import ConfigParser
-from os import getcwd
 from argparse import ArgumentParser
-from os.path import join as path_join
-from os.path import isdir as is_dir
+
+from traceback import print_exc
+
+
+from os import getcwd
 from os import listdir as list_dir
 from os import remove as remove_file
-from traceback import print_exc
-from video.vidConfig import VideoConfig
 from os import makedirs as make_dir
-from postHandlers import handle_comment_post, handle_video_post
-
-from tts import get_tts_engine
-
-from prompts import prompt_list, prompt_list
+from os.path import join as path_join
+from os.path import isdir as is_dir
 
 
 CONFIG_PATH = path_join(getcwd(), "user_configs/")
@@ -126,7 +128,13 @@ def check_ouput_dir():
     if not is_dir(OUTPUT_PATH):
         print(f"Creating output path @ {OUTPUT_PATH}")
         make_dir(OUTPUT_PATH)
+
+    if not is_dir(POSTS_PATH):
+        print(f"Creating posts path @ {POSTS_PATH}")
         make_dir(POSTS_PATH)
+
+    if not is_dir(COMMENTS_PATH):
+        print(f"Creating comments path @ {COMMENTS_PATH}")
         make_dir(COMMENTS_PATH)
 
 

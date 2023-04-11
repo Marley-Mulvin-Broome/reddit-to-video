@@ -27,12 +27,14 @@
 #     }]
 # }
 
+from reddit_to_video.tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
+from reddit_to_video.exceptions import ConfigKeyError, DirectoryNotFoundError
+from .exportSettings import ExportSettings
+
+
 from os.path import isfile as is_file
 from os.path import isdir as is_dir
 from json import load as json_load
-from tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
-from .exportSettings import ExportSettings
-from exceptions import ConfigKeyError, DirectoryNotFoundError
 
 reddit_sorts = ["relevance", "hot", "top", "new", "comments"]
 reddit_time_filters = ["all", "year", "month", "week", "day", "hour"]
@@ -124,6 +126,9 @@ class VideoConfig:
         validate_json_val(self._settings, "video_break_footage", str,
                           optional=True, check_file=True)
         validate_json_val(self._settings, "max_video_length", int)
+        validate_json_val(self._settings, "noramlise_audio",
+                          float, optional=True)
+
         validate_json_val(self._settings, "target_resolution",
                           dict, optional=True)
 

@@ -1,9 +1,15 @@
+from reddit_to_video.exceptions import OsNotSupportedError
+
+
 import os
 import sys
 import subprocess
 import re
 
 from os.path import isfile as is_file
+from os.path import isdir as is_dir
+from os.path import join as path_join
+from os import makedirs as make_dir
 
 from contextlib import contextmanager
 
@@ -11,9 +17,6 @@ from requests import get
 
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
-
-
-from exceptions import OsNotSupportedError
 
 
 def remove_links_from_text(text: str) -> str:
@@ -51,7 +54,6 @@ def can_write_to_file(file_path: str) -> bool:
     try:
         f = open(file_path, "w")
         f.close()
-        os.remove(file_path)
         return True
     except:
         return False
@@ -95,3 +97,18 @@ def preview_video(video_path: str) -> None:
     else:
         raise OsNotSupportedError(
             f"preview_video() os {os.name} is not supported for previewing videos")
+
+
+TEMP_PATH = "output/temp"
+
+
+def write_temp(file_name: str, content) -> str:
+    if not is_dir(TEMP_PATH):
+        make_dir(TEMP_PATH)
+
+    file_path = path_join(TEMP_PATH, file_name)
+
+    with open(file_path, "w") as f:
+        f.write(content)
+
+    return file_path

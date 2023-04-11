@@ -20,6 +20,8 @@ from utility import preview_video
 import logging
 import time
 
+from loggingHandle import setup_logging, remove_logger
+
 
 def prompt_preview_vid(output_location: str):
     will_preview = prompt_bool("Preview video? (y/n): ")
@@ -179,21 +181,21 @@ def get_video_from_post(post: Submission) -> ScriptElement:
         if urls != []:
             url = urls[0]
         else:
-            logging.info(
+            logging.warning(
                 f"Post ({post.id}, {post.title}) has no urls in its text")
             return None
 
     clip_service = get_clip_service_from_url(url)
 
     if clip_service.value == ClipService.NONE.value:
-        print(
+        logging.warning(
             f"Post ({post.id}, {post.title}) has no supported clip service")
         return None
 
     try:
         download_by_service(url, clip_service, output_path)
     except Exception as e:
-        print(
+        logging.error(
             f"Post ({post.id}, {post.title}) failed to download from {clip_service.value}. ({e})")
         return None
 
@@ -215,7 +217,9 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
 
     print(f"Getting videos from {len(posts)} posts on 10 threads...")
 
-    with tqdm(total=len(posts), position=1) as pbar:
+    setup_logging()
+
+    with tqdm(total=len(posts)) as pbar:
         with Pool(processes=10) as pool:
             for post in pool.imap_unordered(get_video_from_post, posts):
                 pbar.update(1)
@@ -224,7 +228,7 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
                     continue
 
                 if post.duration > config_settings.settings.max_video_length:
-                    print(
+                    pbar.write(
                         f"Post ({post.text}) is too long, skipping ({post.duration} seconds)")
                     continue
 
@@ -233,17 +237,27 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
                 else:
                     script_elements.append(post)
 
+    remove_logger()
+
     print("Finished getting videos from posts")
 
     script = VideoScript(config_settings.settings.max_length,
                          config_settings.settings.min_length)
-    script.add_script_element(end_card_element, True)
+    try:
+        script.add_script_element(end_card_element, True)
+    except ScriptElementTooLongError:
+        prompt_continue = prompt_bool(
+            "End card too big, do you want to continue? (y/n): ")
 
-    with tqdm(total=len(script_elements)) as pbar:
-        if video_break_element is not None:
-            script.add_script_element_pairs(script_elements, pbar=pbar)
-        else:
-            script.add_script_elements(script_elements, pbar=pbar)
+        if not prompt_continue:
+            exit(0)
+
+        print("Skipping end card...")
+
+    if video_break_element is not None:
+        script.add_script_element_pairs(script_elements)
+    else:
+        script.add_script_elements(script_elements)
     if not script.finished:
         print(
             f"Script not finished, with duration of {script.duration} seconds.")

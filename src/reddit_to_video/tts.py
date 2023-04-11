@@ -1,6 +1,7 @@
+from reddit_to_video.utility import remove_links_from_text, remove_non_words
+
 import pyttsx3
 import gtts
-from utility import remove_links_from_text, remove_non_words
 from enum import Enum
 
 

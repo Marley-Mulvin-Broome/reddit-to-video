@@ -1,7 +1,8 @@
+from reddit_to_video.utility import download_img
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from os.path import join as path_join
-from utility import download_img
 
 
 def concat_comment_id(comment_id: str) -> str:

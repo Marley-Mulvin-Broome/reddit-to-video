@@ -1,6 +1,5 @@
+from reddit_to_video.exceptions import ScriptElementTooLongError, NotInCollectionError
 from .scriptElement import ScriptElement
-
-from exceptions import ScriptElementTooLongError, NotInCollectionError
 
 
 class VideoScript:
@@ -43,7 +42,8 @@ class VideoScript:
 
     def add_script_element(self, script_element, footer=False):
         if not self.can_add_script_element(script_element):
-            raise ScriptElementTooLongError("VideoScript() max length exceeded")
+            raise ScriptElementTooLongError(
+                "VideoScript() max length exceeded")
 
         script_element.id_ = self._id_count
 
@@ -58,7 +58,8 @@ class VideoScript:
 
     def add_script_element_pair(self, script_element, second_element, footer=False):
         if self.cur_length + script_element.duration + second_element.duration > self.max_length:
-            raise ScriptElementTooLongError("VideoScript() max length exceeded")
+            raise ScriptElementTooLongError(
+                "VideoScript() max length exceeded")
 
         script_element.id_ = self._id_count
         second_element.id_ = self._id_count + 1

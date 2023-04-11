@@ -1,11 +1,12 @@
+from reddit_to_video.exceptions import EmptyCollectionError, OutputPathValidationError
+from reddit_to_video.utility import can_write_to_file, write_temp
 from .videoScript import VideoScript
 from .scriptElement import ScriptElement
 from .videoScript import VideoScript
 from .exportSettings import ExportSettings
+from .audio import normalise_audio_bytes
 from os.path import isfile as is_file
 
-from exceptions import EmptyCollectionError, OutputPathValidationError
-from utility import can_write_to_file
 
 # DO NOT import from moviepy.editor (has overhead)
 from moviepy.video.io.VideoFileClip import VideoFileClip
@@ -13,7 +14,6 @@ from moviepy.video.VideoClip import ImageClip, VideoClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from moviepy.video.compositing.concatenate import concatenate_videoclips
-from moviepy.video.fx.resize import resize
 
 
 def createCommentClip(script_element: ScriptElement):
@@ -85,7 +85,7 @@ def composeCommentVideo(output_file: str, background_footage: str, script: Video
         output_file, logger=logger, **export_settings.unbox())
 
 
-def composeVideoVideo(output_file: str, script: VideoScript, target_resolution: tuple[int, int] = None, export_settings: ExportSettings = None, logger=None):
+def composeVideoVideo(output_file: str, script: VideoScript, target_resolution: tuple[int, int] = None, normalise_audio: float = None, export_settings: ExportSettings = None, logger=None):
     if len(script) == 0:
         raise EmptyCollectionError("composeVideoVideo() script is empty")
 
@@ -103,13 +103,21 @@ def composeVideoVideo(output_file: str, script: VideoScript, target_resolution: 
 
     for script_element in script.all:
         clips.append(VideoFileClip(
-            script_element.visual_path, target_resolution=(1080, 1920)).set_position("center", "center").set_start(cur_time))
+            script_element.visual_path, target_resolution=(target_resolution[1], target_resolution[0])).set_position("center", "center").set_start(cur_time))
         cur_time += script_element.duration
 
     # final_clip: VideoClip = concatenate_videoclips(
     #     clips).set_fps(export_settings.fps)
 
-    final_clip = CompositeVideoClip(clips).set_fps(export_settings.fps)
+    final_clip: CompositeVideoClip = CompositeVideoClip(
+        clips).set_fps(export_settings.fps)
+
+    if normalise_audio is not None:
+        print("Normalising audio")
+        clip_audio = final_clip.audio.to_soundarray(fps=44100)
+        normalised = normalise_audio_bytes(clip_audio, normalise_audio)
+        audio_path = write_temp("temp_normalised.wav", normalised)
+        final_clip = final_clip.set_audio(AudioFileClip(audio_path))
 
     # if target_resolution is not None:
     #     resize(

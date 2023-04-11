@@ -1,6 +1,7 @@
-from utility import get_video_duration, get_audio_duration
+from reddit_to_video.exceptions import NoAudioError
+from reddit_to_video.utility import get_video_duration, get_audio_duration
+
 from os.path import isfile as is_file
-from exceptions import NoAudioError
 
 
 class ScriptElement:

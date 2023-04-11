@@ -18,7 +18,7 @@ youtube_clip_pattern = re.compile(r".*youtube\.com\/watch\?v=.*")
 youtube_share_clip_pattern = re.compile(r".*youtu\.be\/.*")
 
 # reddit
-reddit_clip_patter = re.compile(r"")
+reddit_clip_pattern = re.compile(r".*www.reddit.com/r/.*/comments/.*")
 
 
 class ClipService(Enum):
@@ -43,12 +43,21 @@ def get_clip_service_from_url(url: str) -> ClipService:
         return ClipService.KICK
     elif is_valid_youtube_url(url):
         return ClipService.YOUTUBE
+    elif is_valid_reddit_clip_url(url):
+        return ClipService.REDDIT
 
     return ClipService.NONE
 
 
 def is_valid_url(url: str) -> bool:
     return url_pattern.match(url) is not None
+
+
+def is_valid_reddit_clip_url(url: str) -> bool:
+    if reddit_clip_pattern.match(url) is None:
+        return False
+
+    return True
 
 
 def is_valid_twitch_clip_url(url: str) -> bool:

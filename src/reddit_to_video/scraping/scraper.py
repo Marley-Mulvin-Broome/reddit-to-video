@@ -1,7 +1,7 @@
 from requests import get
 from redvid import Downloader
 from pytube import YouTube
-from utility import can_write_to_file
+from reddit_to_video.utility import can_write_to_file
 from bs4 import BeautifulSoup
 from .urlValidator import is_valid_kick_clip, is_valid_streamable_clip, is_valid_twitch_clip_url, is_valid_youtube_url, ClipService
 
