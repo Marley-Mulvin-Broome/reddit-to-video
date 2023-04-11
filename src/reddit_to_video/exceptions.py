@@ -68,3 +68,7 @@ class NoImageError(Exception):
 
 class ScrapingError(Exception):
     """Raised when there is an error scraping a web page"""
+
+
+class DurationTooLongError(Exception):
+    """Raised when a duration is too long"""

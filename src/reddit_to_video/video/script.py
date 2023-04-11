@@ -42,6 +42,11 @@ class VideoScript:
         return "\n".join([script_element.text for script_element in self.all])
 
     @property
+    def duration(self) -> float:
+        """Returns the duration of all the script elements in the VideoScript, for a faster response use cur_length"""
+        return sum([script_element.duration for script_element in self.all])
+
+    @property
     def all(self) -> list[ScriptElement]:
         """Returns a list of all the script elements in the VideoScript, combining the script elements and footer elements"""
         return self.script_elements + self.footer_elements
@@ -162,4 +167,4 @@ class VideoScript:
             self.script_elements.remove(element)
 
     def __len__(self):
-        return len(self.script_elements)
+        return len(self.script_elements + self.footer_elements)

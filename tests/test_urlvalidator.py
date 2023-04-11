@@ -12,7 +12,8 @@ clip_urls = {
     "https://twitch.tv/1234567890/clip/1234567890": ClipService.TWITCH,
     "https://www.twitch.tv/plumy_/clip/MoldyTamePandaBCWarrior-DIsGTx_CrhxaC437": ClipService.TWITCH,
     "https://www.reddit.com/r/fightporn/comments/ei6pek/ochappy_new_year_rfightporn/": ClipService.REDDIT,
-    "https://github.com/Marley-Mulvin-Broome/reddit-to-video": ClipService.NONE
+    "https://github.com/Marley-Mulvin-Broome/reddit-to-video": ClipService.NONE,
+    "https://blog.twitch.tv/en/2021/05/21/lets-talk-about-hot-tub-streams/?utm_referrer=https://help.twitch.tv/": ClipService.NONE
 }
 
 
