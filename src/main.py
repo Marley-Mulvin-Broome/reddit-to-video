@@ -148,12 +148,12 @@ def handle_system_args(parser, args, config, user_agent):
         for voice in voices:
             print(voice)
 
-        print("Coqui voices:")
-        tts = get_tts_engine("c")
-        voices = tts.get_voices()
+        # print("Coqui voices:")
+        # tts = get_tts_engine("c")
+        # voices = tts.get_voices()
 
-        for voice in voices:
-            print(voice)
+        # for voice in voices:
+        #     print(voice)
 
         exit_program(0)
     if args.clear:
