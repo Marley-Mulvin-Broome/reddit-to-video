@@ -4,13 +4,14 @@ from pytube import YouTube
 from reddit_to_video.utility import can_write_to_file
 from bs4 import BeautifulSoup
 
-from reddit_to_video.scraping.validator import is_valid_kick_clip, is_valid_streamable_clip, is_valid_twitch_clip_url, is_valid_youtube_url, ClipService
+from reddit_to_video.scraping.validator import is_valid_kick_clip, is_valid_streamable_clip, is_valid_twitch_clip_url, ClipService
 
 DEFAULT_REQ_TIMEOUT = 3000
 
 
 def retreieve_content_from_url(url: str, timeout: int = DEFAULT_REQ_TIMEOUT) -> bytes:
-    """Retreives the content of a url and returns it as bytes. Used for downloading img or video files"""
+    """Retreives the content of a url and returns it as bytes. 
+    Used for downloading img or video files"""
     response = get(url, timeout=timeout)
 
     if response.status_code != 200:
@@ -38,7 +39,8 @@ def get_soup_from_url(url: str, timeout: int = 3000) -> BeautifulSoup:
 
 
 def download_youtube_video(url: str, output: str):
-    """Downloads a youtube video to a file. The output must be a path that can be written to"""
+    """Downloads a youtube video to a file. 
+    The output must be a path that can be written to"""
     # if not can_write_to_file(output):
     #     raise Exception(
     #         f"download_youtube_video() output {output} is not a path that can be written to")
@@ -48,7 +50,8 @@ def download_youtube_video(url: str, output: str):
 
 
 def download_streamable_video(url: str, output: str):
-    """Downloads a streamable video to a file. The output must be a path that can be written to"""
+    """Downloads a streamable video to a file. 
+    The output must be a path that can be written to"""
     if not is_valid_streamable_clip(url):
         raise Exception(
             f"download_streamable_video() url {url} is not a valid streamable url")
@@ -57,7 +60,8 @@ def download_streamable_video(url: str, output: str):
 
 
 def download_kick_video(url: str, output: str):
-    """Downloads a kick video to a file. The output must be a path that can be written to"""
+    """Downloads a kick video to a file. 
+    The output must be a path that can be written to"""
     if not is_valid_kick_clip(url):
         raise Exception(
             f"download_kick_video() url {url} is not a valid kick url")
@@ -66,7 +70,8 @@ def download_kick_video(url: str, output: str):
 
 
 def download_twitch_clip(url: str, output: str):
-    """Downloads a twitch clip to a file. The output must be a path that can be written to"""
+    """Downloads a twitch clip to a file. 
+    The output must be a path that can be written to"""
     if not is_valid_twitch_clip_url(url):
         raise Exception(
             f"download_twitch_clip() url {url} is not a valid twitch clip url")
@@ -75,10 +80,12 @@ def download_twitch_clip(url: str, output: str):
 
 
 def download_from_video_tag(url: str, output: str):
-    """Downloads a video from a video tag to a file. The output must be a path that can be written to"""
+    """Downloads a video from a video tag to a file. 
+    The output must be a path that can be written to"""
     if not can_write_to_file(output):
         raise Exception(
-            f"download_from_video_tag() output {output} is not a path that can be written to")
+            (f"download_from_video_tag() output {output} "
+             "is not a path that can be written to"))
 
     # get html
     html = get_soup_from_url(url)
@@ -87,7 +94,7 @@ def download_from_video_tag(url: str, output: str):
 
     if video is None:
         raise Exception(
-            f"download_from_video_tag() could not find video tag in html")
+            "download_from_video_tag() could not find video tag in html")
 
     # get the src attribute
     src = video['src']
@@ -99,7 +106,8 @@ def download_from_video_tag(url: str, output: str):
 
 
 def download_reddit_video(url: str, output: str):
-    """Downloads a reddit video to a file. The output must be a path that can be written to"""
+    """Downloads a reddit video to a file. 
+    The output must be a path that can be written to"""
     if not can_write_to_file(output):
         raise Exception(
             f"download_reddit_video() output {output} is not a path that can be written to")
@@ -113,7 +121,8 @@ def download_reddit_video(url: str, output: str):
 
 
 def download_by_service(url: str, clip_server: ClipService, output_path: str) -> None:
-    """Downloads a clip from a url to a file. The output must be a path that can be written to"""
+    """Downloads a clip from a url to a file. 
+    The output must be a path that can be written to"""
     if clip_server.value == ClipService.TWITCH.value:
         download_twitch_clip(url, output_path)
     elif clip_server.value == ClipService.STREAMABLE.value:
@@ -126,4 +135,5 @@ def download_by_service(url: str, clip_server: ClipService, output_path: str) ->
         download_reddit_video(url, output_path)
     else:
         raise Exception(
-            f"download_by_service() clip_server {clip_server} is not a valid clip server")
+            (f"download_by_service() clip_server {clip_server}"
+             "is not a valid clip server"))

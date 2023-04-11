@@ -34,7 +34,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
 
     try:
         post.screenshot_title(post_screenshot_out)
-    except Exception as e:
+    except Exception:
         print("Failed to screenshot post title, is it new reddit layout?")
         print("Tryting again...")
 
@@ -66,7 +66,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
                 comment.body, audio_out)
         if not is_file(screenshot_out):
             post.screenshot_comment(
-                comment.id, f"output/comments/")
+                comment.id, "output/comments/")
 
     post.close()
 
@@ -126,8 +126,11 @@ def handle_comment_post(selected_post, config: VideoConfig):
     print("Exporting video...")
     start_time = time.time()
     # export video
-    composeCommentVideo(output_location, config.settings.background_footage,
-                        script, config.export_settings, logger=default_bar_logger('bar'))
+    composeCommentVideo(output_location,
+                        config.settings.background_footage,
+                        script,
+                        config.export_settings,
+                        logger=default_bar_logger('bar'))
 
     print(f"Finished exporting video in {time.time() - start_time} seconds")
 

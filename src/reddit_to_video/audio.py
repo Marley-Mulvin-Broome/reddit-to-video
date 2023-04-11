@@ -6,14 +6,16 @@ import soundfile as sf
 
 
 def normalise_audio_clip(audio_path: str, target_loudness: float):
-    """Normalises an audio clip to a target loudness. The audio clip must be a .mp3 or .wav file"""
+    """Normalises an audio clip to a target loudness. 
+    The audio clip must be a .mp3 or .wav file"""
     if not is_file(audio_path):
         raise FileNotFoundError(
             f"normalise_audio_clip() Audio file {audio_path} does not exist")
 
     if not audio_path.endswith(".mp3") and not audio_path.endswith(".wav"):
         raise ValueError(
-            f"normalise_audio_clip() Audio file {audio_path} is not a .mp3 or .wav file")
+            ("normalise_audio_clip() Audio file"
+             f"{audio_path} is not a .mp3 or .wav file"))
 
     data = normalise_audio_bytes(audio_path, target_loudness)
 

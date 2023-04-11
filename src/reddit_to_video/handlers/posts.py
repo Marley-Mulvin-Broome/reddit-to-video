@@ -97,7 +97,8 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
 
                 if post.duration > config_settings.settings.max_video_length:
                     pbar.write(
-                        f"Post ({post.text}) is too long, skipping ({post.duration} seconds)")
+                        (f"Post ({post.text}) is too long, "
+                         f"skipping ({post.duration} seconds)"))
                     continue
 
                 if video_break_element is not None:

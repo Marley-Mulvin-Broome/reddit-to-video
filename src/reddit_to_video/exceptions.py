@@ -2,7 +2,8 @@
 
     Exceptions:
         ScriptElementTooLongError: 
-        Raised when a ScriptElement's duration is too long to be added to a VideoScript object
+        Raised when a ScriptElement's duration is 
+        too long to be added to a VideoScript object
 
         NotInCollectionError: 
         Raised when an item is not found in a collection
@@ -29,7 +30,8 @@
 
 
 class ScriptElementTooLongError(Exception):
-    """Raised when a ScriptElement's duration is too long to be added to a VideoScript object"""
+    """Raised when a ScriptElement's duration is too long to 
+    be added to a VideoScript object"""
 
 
 class NotInCollectionError(Exception):

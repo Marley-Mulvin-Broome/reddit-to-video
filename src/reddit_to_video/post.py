@@ -98,7 +98,8 @@ class Post:
             download_img(image.get_attribute("src"), destination)
         except Exception as exception:
             print(
-                "download_image() Error downloading image, trying screenshot instead:" + exception)
+                ("download_image() Error downloading image, "
+                 "trying screenshot instead:" + exception))
             # try screenshot
             image.screenshot(destination)
 

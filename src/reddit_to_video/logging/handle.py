@@ -27,6 +27,7 @@ tqdm_handler = None
 
 class TqdmLoggingHandler(logging.Handler):
     """Logging handler that outputs to tqdm"""
+
     def __init__(self, level=logging.NOTSET):
         """Initialises the logging handler"""
         super().__init__(level)
@@ -39,8 +40,6 @@ class TqdmLoggingHandler(logging.Handler):
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
-            self.handleError(record)
 
 
 def setup_logging(level=logging.INFO):
