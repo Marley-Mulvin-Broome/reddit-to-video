@@ -1,10 +1,14 @@
+from os import rename as rename_file
+
 from requests import get
 from redvid import Downloader
 from pytube import YouTube
-from reddit_to_video.utility import can_write_to_file
 from bs4 import BeautifulSoup
 
 from reddit_to_video.scraping.validator import is_valid_kick_clip, is_valid_streamable_clip, is_valid_twitch_clip_url, ClipService
+from reddit_to_video.exceptions import DurationTooLongError
+from reddit_to_video.utility import can_write_to_file
+
 
 DEFAULT_REQ_TIMEOUT = 3000
 
@@ -105,19 +109,34 @@ def download_from_video_tag(url: str, output: str):
         f.write(content)
 
 
-def download_reddit_video(url: str, output: str):
+def download_reddit_video(url: str, output: str) -> str:
     """Downloads a reddit video to a file. 
     The output must be a path that can be written to"""
-    if not can_write_to_file(output):
-        raise Exception(
-            f"download_reddit_video() output {output} is not a path that can be written to")
 
-    reddit = Downloader()
-    reddit.url(url)
-    reddit.log = False
-    reddit.file_name = output
-    reddit.max = True
-    reddit.download()
+    split_output = output.split("/")
+
+    file_name = split_output[-1]
+
+    file_path = "/".join(split_output[:-1])
+
+    if len(split_output) <= 2:
+        file_path += "/"
+
+    downloader = Downloader(url=url, path=file_path,
+                            max_q=True, log=False).download()
+
+    if isinstance(downloader, str):
+        rename_file(downloader, file_path + file_name)
+        return downloader
+
+    if downloader == 0:
+        raise RuntimeError(
+            "download_reddit_video() Video is too big to download")
+    if downloader == 1:
+        raise DurationTooLongError(
+            "download_reddit_video() Video is too long to download")
+    if downloader == 2:
+        raise FileExistsError("download_reddit_video() File already exists")
 
 
 def download_by_service(url: str, clip_server: ClipService, output_path: str) -> None:
