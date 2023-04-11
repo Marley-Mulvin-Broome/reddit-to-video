@@ -86,10 +86,10 @@ def download_twitch_clip(url: str, output: str):
 def download_from_video_tag(url: str, output: str):
     """Downloads a video from a video tag to a file. 
     The output must be a path that can be written to"""
-    if not can_write_to_file(output):
-        raise Exception(
-            (f"download_from_video_tag() output {output} "
-             "is not a path that can be written to"))
+    # if not can_write_to_file(output):
+    #     raise Exception(
+    #         (f"download_from_video_tag() output {output} "
+    #          "is not a path that can be written to"))
 
     # get html
     html = get_soup_from_url(url)
@@ -105,8 +105,8 @@ def download_from_video_tag(url: str, output: str):
     # download the that src
     content = retreieve_content_from_url(src)
     # write to file
-    with open(output, "wb") as f:
-        f.write(content)
+    with open(output, "wb") as file:
+        file.write(content)
 
 
 def download_reddit_video(url: str, output: str) -> str:
