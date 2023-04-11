@@ -1,4 +1,5 @@
 from os import rename as rename_file
+from os.path import join as path_join
 
 from requests import get
 from redvid import Downloader
@@ -141,16 +142,13 @@ def download_reddit_video(url: str, output: str) -> str:
 
     file_name = split_output[-1]
 
-    file_path = "/".join(split_output[:-1])
-
-    if len(split_output) <= 2:
-        file_path += "/"
+    file_path = "/".join(split_output[:-1]) + "/"
 
     downloader = Downloader(url=url, path=file_path,
                             max_q=True, log=False).download()
 
     if isinstance(downloader, str):
-        rename_file(downloader, file_path + file_name)
+        rename_file(downloader, path_join(file_path, file_name))
         return downloader
 
     if downloader == 0:

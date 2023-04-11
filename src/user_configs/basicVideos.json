@@ -78,8 +78,8 @@
             },
             "export_settings": {
                 "codec": "mpeg4",
-                "bitrate": "16000k",
-                "fps": 30,
+                "bitrate": "10000k",
+                "fps": 60,
                 "threads": 10,
                 "compression": "UltraFast"
             }

@@ -57,7 +57,7 @@ def get_video_from_post(post: Submission) -> ScriptElement:
 
     if clip_service.value == ClipService.NONE.value:
         logging.warning(
-            f"Post ({post.id}, {post.title}) has no supported clip service")
+            f"Post ({post.id}, {post.title}, {url}) has no supported clip service")
         return None
 
     try:
@@ -133,7 +133,7 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
         script.add_script_elements(script_elements)
     if not script.finished:
         print(
-            f"Script not finished, with duration of {script.duration} seconds.")
+            f"Script not finished, with duration of {script.cur_length} seconds.")
         proceed = prompt_bool("Do you still want to continue? (y/n): ")
 
         if not proceed:
