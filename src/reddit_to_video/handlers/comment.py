@@ -1,6 +1,7 @@
 import time
 
 from os.path import isfile as is_file
+from sys import exit as exit_program
 
 from proglog import default_bar_logger
 
@@ -41,7 +42,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
 
         if max_failures == 0:
             print("Failed to screenshot post title")
-            exit(1)
+            exit_program(1)
 
         post.reload()
 
@@ -114,7 +115,7 @@ def handle_comment_post(selected_post, config: VideoConfig):
 
         if not proceed:
             print("Exiting...")
-            exit(0)
+            exit_program(0)
 
     print(f"Loaded {possible_comments}/{len(comments)} possible comments")
 

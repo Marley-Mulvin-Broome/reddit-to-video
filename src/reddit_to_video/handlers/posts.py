@@ -1,13 +1,14 @@
 import logging
 import time
 
-from proglog import default_bar_logger
 from os.path import isfile as is_file
 from os.path import join as path_join
-
 from multiprocessing.pool import Pool
+from sys import exit as exit_program
+
 from praw.models.reddit.submission import Submission
 from tqdm import tqdm
+from proglog import default_bar_logger
 
 from reddit_to_video.scraping.validator import get_clip_service_from_url, get_urls_from_string, ClipService
 from reddit_to_video.scraping.scraper import download_reddit_video, download_by_service
@@ -108,6 +109,10 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
 
     print("Finished getting videos from posts")
 
+    if len(script_elements) == 0:
+        print("No videos found, exiting...")
+        exit_program(0)
+
     script = VideoScript(config_settings.settings.max_length,
                          config_settings.settings.min_length)
     try:
@@ -117,7 +122,7 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
             "End card too big, do you want to continue? (y/n): ")
 
         if not prompt_continue:
-            exit(0)
+            exit_program(0)
 
         print("Skipping end card...")
 
@@ -132,7 +137,7 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
 
         if not proceed:
             print("Exiting...")
-            exit(0)
+            exit_program(0)
 
     output_location = prompt_write_file("Output location: ", overwrite=True)
 
