@@ -61,7 +61,7 @@ An example of implementing an English speaker with an australia accent would loo
 
 Coqui TTS offers a [large variety of different models](https://tts.readthedocs.io/en/latest/#implemented-models). To view all the pre installed models on your machine type on the command line `tts --list-models`. Custom trained models are supported and are selected by setting the key `model_path` to the path of the model on your machine.
 
-The `kwargs` tag in the configuration passed all of the kwargs to coqui itself directly, meaning you can put any argument you would as if you were directly calling the Coqui constructor. 
+The `kwargs` tag in the configuration passed all of the kwargs to coqui itself directly, meaning you can put any argument you would as if you were directly calling the Coqui constructor.
 
     "tts": {
         "engine": "coqui",
