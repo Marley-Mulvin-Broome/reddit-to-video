@@ -1,6 +1,7 @@
-from os.path import isfile as is_file
 import pyloudnorm as pyln
 import soundfile as sf
+from os.path import isfile as is_file
+
 
 
 def normalise_audio_clip(audio_path: str, target_loudness: float):

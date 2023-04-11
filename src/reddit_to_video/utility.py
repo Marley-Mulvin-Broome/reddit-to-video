@@ -1,8 +1,35 @@
-from reddit_to_video.exceptions import OsNotSupportedError
+"""Utility functions for reddit_to_video
 
+Functions:
+    remove_links_from_text(text: str) -> str: 
+        Removes links from text
 
+    download_img(url, destination) -> None: 
+        Downloads an image from a url to a destination
+
+    get_audio_duration(audio_path: str) -> float: 
+        Returns the duration of an audio file in seconds
+
+    get_video_duration(video_path: str) -> float: 
+        Returns the duration of a video file in seconds
+    
+    can_write_to_file(file_path: str) -> bool: 
+        Returns True if the file can be written to, False otherwise
+
+    remove_non_words(text: str) -> str: 
+        Removes non-word characters from text
+
+    split_sentences(text: str) -> list: 
+        Splits text into sentences
+
+    preview_video(video_path: str) -> None: 
+        Opens the video in the default video player
+
+    write_temp(file_name: str, content) -> str: 
+        Writes content to a temporary file
+
+"""
 import os
-import sys
 import subprocess
 import re
 
@@ -11,12 +38,12 @@ from os.path import isdir as is_dir
 from os.path import join as path_join
 from os import makedirs as make_dir
 
-from contextlib import contextmanager
-
 from requests import get
 
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
+
+from reddit_to_video.exceptions import OsNotSupportedError
 
 
 def remove_links_from_text(text: str) -> str:
@@ -26,7 +53,7 @@ def remove_links_from_text(text: str) -> str:
     return text
 
 
-def download_img(url, destination) -> None:
+def download_img(url: str, destination: str) -> None:
     """Downloads an image from a url to a destination"""
     img_data = get(url).content
 
@@ -70,27 +97,14 @@ def remove_non_words(text: str) -> str:
     return text
 
 
-# split_sentences regex from https://stackoverflow.com/questions/25735644/python-regex-for-splitting-text-into-sentences-sentence-tokenizing
 
 
 def split_sentences(text: str) -> list:
-    """Splits text into sentences"""
+    """Splits text into sentences
+    split_sentences regex from https://stackoverflow.com/questions/25735644/python-regex-for-splitting-text-into-sentences-sentence-tokenizing
+    
+    """
     return re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
-
-
-# from https://stackoverflow.com/questions/2125702/how-to-suppress-console-output-in-python
-
-
-@contextmanager
-def suppress_stdout():
-    """Suppresses stdout"""
-    with open(os.devnull, "w") as devnull:
-        old_stdout = sys.stdout
-        sys.stdout = devnull
-        try:
-            yield
-        finally:
-            sys.stdout = old_stdout
 
 
 def preview_video(video_path: str) -> None:

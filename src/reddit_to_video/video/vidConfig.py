@@ -1,31 +1,41 @@
-# Example config file
-# {
-#     "configs": [{
-#         "name": "Askreddit comments top all time",
-#         "description": "Makes a video from Reddit comments on a post",
-#         "settings": {
-#             "type": "comment",
-#             "subreddit": "askreddit",
-#             "sort": "top",
-#             "time": "all",
-#             "limit": 100,
-#             "max_length": 200,
-#             "min_length": 30,
-#             "background_footage": "backgrounds/footage.mp4",
-#             "tts": {
-#                 "engine": "google",
-#                 "accent": "Australia"
-#             },
-#             "export_settings": {
-#                 "codec": "libx264",
-#                 "bitrate": "5000k",
-#                 "fps": 30,
-#                 "threads": 4,
-#                 "compression": "UltraFast"
-#             }
-#         }
-#     }]
-# }
+"""Video config module
+
+This module contains the VideoConfig class, which is used to store and validate video config json objects.
+
+Classes:
+    VideoConfig: Stores and validates video config json objects
+
+Example config file
+{
+    "configs": [{
+        "name": "Askreddit comments top all time",
+        "description": "Makes a video from Reddit comments on a post",
+        "settings": {
+            "type": "comment",
+            "subreddit": "askreddit",
+            "sort": "top",
+            "time": "all",
+            "limit": 100,
+            "max_length": 200,
+            "min_length": 30,
+            "background_footage": "backgrounds/footage.mp4",
+            "tts": {
+                "engine": "google",
+                "accent": "Australia"
+            },
+            "export_settings": {
+                "codec": "libx264",
+                "bitrate": "5000k",
+                "fps": 30,
+                "threads": 4,
+                "compression": "UltraFast"
+            }
+        }
+    }]
+}
+"""
+
+
 
 from reddit_to_video.tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
 from reddit_to_video.exceptions import ConfigKeyError, DirectoryNotFoundError

@@ -1,3 +1,32 @@
+"""Exceptions for the reddit_to_video package
+
+    Exceptions:
+        ScriptElementTooLongError: 
+        Raised when a ScriptElement's duration is too long to be added to a VideoScript object
+
+        NotInCollectionError: 
+        Raised when an item is not found in a collection
+
+        NoAudioError: 
+        Raised when a script element has no audio but is not a video
+
+        EmptyCollectionError: 
+        Raised when a collection is empty
+
+        OutputPathValidationError: 
+        Raised when an output path is not valid
+
+        OsNotSupportedError: 
+        Raised when the OS is not supported
+
+        ConfigKeyError: 
+        Raised when a config key is not found
+
+        DirectoryNotFoundError: 
+        Raised when a directory is not found
+
+"""
+
 class ScriptElementTooLongError(Exception):
     """Raised when a ScriptElement's duration is too long to be added to a VideoScript object"""
 

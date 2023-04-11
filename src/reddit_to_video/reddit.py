@@ -1,5 +1,12 @@
-import praw
+"""A wrapper for the praw wrapper of the Reddit API
+
+This module contains the Reddit class, which is a wrapper for the praw wrapper of the Reddit API. This class is used to get posts from Reddit.
+
+Classes:
+    Reddit: A wrapper for the praw wrapper of the Reddit API
+"""
 import logging
+import praw
 
 
 class Reddit:
@@ -12,7 +19,7 @@ class Reddit:
         self.debug = debug
 
         if self.debug:
-            self._loadLogger()
+            self._load_logger()
 
         self._reddit = praw.Reddit(client_id=self.client_id,
                                    client_secret=self.client_secret,

@@ -1,3 +1,10 @@
+""" Export settings for videos
+
+Classes:
+    Compression(Enum): Compression presets for ffmpeg
+    ExportSettings(dataclass): Export settings for videos
+"""
+
 from enum import Enum
 from dataclasses import dataclass
 

@@ -1,7 +1,6 @@
-from reddit_to_video.utility import can_write_to_file
-
-
 from os.path import exists as path_exists
+
+from reddit_to_video.utility import can_write_to_file
 
 
 def prompt_list(options: list[tuple], prompt_char: str = ">") -> any:

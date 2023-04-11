@@ -1,8 +1,4 @@
-from reddit_to_video.reddit import Reddit
-from reddit_to_video.video.vidConfig import VideoConfig
-from reddit_to_video.postHandlers import handle_comment_post, handle_video_post
-from reddit_to_video.prompts import prompt_list, prompt_list
-from reddit_to_video.tts import get_tts_engine
+"""Main entry point for RedditToVideo"""
 
 from configparser import ConfigParser
 from argparse import ArgumentParser
@@ -16,6 +12,12 @@ from os import remove as remove_file
 from os import makedirs as make_dir
 from os.path import join as path_join
 from os.path import isdir as is_dir
+
+from reddit_to_video.reddit import Reddit
+from reddit_to_video.video.vidConfig import VideoConfig
+from reddit_to_video.postHandlers import handle_comment_post, handle_video_post
+from reddit_to_video.prompts import prompt_list, prompt_list
+from reddit_to_video.tts import get_tts_engine
 
 
 CONFIG_PATH = path_join(getcwd(), "user_configs/")

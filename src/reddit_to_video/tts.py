@@ -1,9 +1,22 @@
-from reddit_to_video.utility import remove_links_from_text, remove_non_words
+"""Text to speech module for reddit_to_video
 
-import pyttsx3
-import gtts
+Classes:
+    ttsEngine: Base class for TTS engines
+    coquiTTS: Coqui TTS engine
+    googleTTS: Google TTS engine
+    pyttsx3TTS: pyttsx3 TTS engine
+    TTSAccents: Enum for Google TTS accents
+
+Functions:
+    get_tts_engine: Get a TTS engine
+
+"""
+
 from enum import Enum
+import gtts
+import pyttsx3
 
+from reddit_to_video.utility import remove_links_from_text, remove_non_words
 
 class TTSAccents(Enum):
     """List of accents for the Google Translate TTS engines"""

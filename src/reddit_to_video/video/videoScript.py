@@ -1,3 +1,9 @@
+"""Module for representing a video script
+
+Classes:
+    VideoScript: Represents a video script
+"""
+
 from reddit_to_video.exceptions import ScriptElementTooLongError, NotInCollectionError
 from .scriptElement import ScriptElement
 

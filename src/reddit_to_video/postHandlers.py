@@ -1,11 +1,6 @@
-from video.compose import composeCommentVideo, composeVideoVideo
-from video.scriptElement import ScriptElement
-from video.videoScript import VideoScript
-from video.vidConfig import VideoConfig
-from tts import get_tts_engine
-from prompts import prompt_bool, prompt_write_file
-from exceptions import ScriptElementTooLongError
-from post import Post
+import logging
+import time
+
 from proglog import default_bar_logger
 from os.path import isfile as is_file
 from os.path import join as path_join
@@ -17,8 +12,14 @@ from praw.models.reddit.submission import Submission
 from tqdm import tqdm
 from utility import preview_video
 
-import logging
-import time
+from reddit_to_video.video.compose import composeCommentVideo, composeVideoVideo
+from reddit_to_video.video.scriptElement import ScriptElement
+from reddit_to_video.video.videoScript import VideoScript
+from reddit_to_video.video.vidConfig import VideoConfig
+from reddit_to_video.tts import get_tts_engine
+from reddit_to_video.prompts import prompt_bool, prompt_write_file
+from reddit_to_video.exceptions import ScriptElementTooLongError
+from reddit_to_video.post import Post
 
 from loggingHandle import setup_logging, remove_logger
 
