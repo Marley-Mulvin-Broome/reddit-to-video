@@ -11,15 +11,23 @@ def concat_comment_id(comment_id: str) -> str:
 
 class Post:
     def __init__(self, url: str, post_id: int, has_image: bool = False):
-        self.url = url
         self.post_id = post_id
         self._has_image = has_image
         self.driver = webdriver.Firefox()
-        self.driver.get(url)
+        self.url = url
 
     @property
     def has_image(self) -> bool:
         return self._has_image
+
+    @property
+    def url(self) -> str:
+        return self._url
+
+    @url.setter
+    def url(self, url: str):
+        self._url = url
+        self.driver.get(url)
 
     def reload(self):
         self.driver.get(self.url)
