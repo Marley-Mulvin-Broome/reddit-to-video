@@ -1,7 +1,7 @@
 
 # Reddit To Video
 
-[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+![Pylint](https://github.com/Marley-Mulvin-Broome/reddit-to-video/actions/workflows/pylint.yml/badge.svg)
 
 Reddit to video is a script that scrapes reddit for posts and / or comments, compiling them into those horrible videos you see on YouTube and TikTok!
 
