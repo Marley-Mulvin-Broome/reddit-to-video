@@ -27,6 +27,7 @@
 
 """
 
+
 class ScriptElementTooLongError(Exception):
     """Raised when a ScriptElement's duration is too long to be added to a VideoScript object"""
 
@@ -46,11 +47,22 @@ class EmptyCollectionError(Exception):
 class OutputPathValidationError(Exception):
     """Raised when an output path is not valid"""
 
+
 class OsNotSupportedError(Exception):
     """Raised when the OS is not supported"""
+
 
 class ConfigKeyError(Exception):
     """Raised when a config key is not found"""
 
+
 class DirectoryNotFoundError(Exception):
     """Raised when a directory is not found"""
+
+
+class NoImageError(Exception):
+    """Raised when there is no image"""
+
+
+class ScrapingError(Exception):
+    """Raised when there is an error scraping a web page"""

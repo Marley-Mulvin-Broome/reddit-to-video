@@ -5,11 +5,12 @@ Classes:
 """
 
 from reddit_to_video.exceptions import ScriptElementTooLongError, NotInCollectionError
-from .scriptElement import ScriptElement
+from reddit_to_video.video.scriptelement import ScriptElement
 
 
 class VideoScript:
     """Represents a video script"""
+
     def __init__(self, max_length, min_length=0, script_elements=None, footer_elements=None):
         """Initialises a VideoScript object"""
         self.script_elements = script_elements
@@ -53,7 +54,7 @@ class VideoScript:
         """Returns True if the duration can be added to the VideoScript, False otherwise"""
         return self.cur_length + duration <= self.max_length
 
-    def add_script_element(self, script_element: ScriptElement, footer: bool=False):
+    def add_script_element(self, script_element: ScriptElement, footer: bool = False):
         """Adds a script element to the VideoScript"""
         if not self.can_add_script_element(script_element):
             raise ScriptElementTooLongError(
@@ -70,7 +71,7 @@ class VideoScript:
 
         self.cur_length += script_element.duration
 
-    def add_script_element_pair(self, script_element: ScriptElement, second_element: ScriptElement, footer: bool=False):
+    def add_script_element_pair(self, script_element: ScriptElement, second_element: ScriptElement, footer: bool = False):
         """Adds a script element and a second element to the VideoScript, trreating them like the same element. Useful for adding two elements that need to be next to eachother or not at all."""
         if self.cur_length + script_element.duration + second_element.duration > self.max_length:
             raise ScriptElementTooLongError(

@@ -18,6 +18,7 @@ import pyttsx3
 
 from reddit_to_video.utility import remove_links_from_text, remove_non_words
 
+
 class TTSAccents(Enum):
     """List of accents for the Google Translate TTS engines"""
     AUSTRALIA = 'com.au'
@@ -40,7 +41,9 @@ class TTSAccents(Enum):
         return cls.__members__.keys()
 
 
-class ttsEngine:
+class TTSEngine:
+    """Base class for TTS engines"""
+
     def save_audio(self, text: str, filename: str) -> None:
         """Save the audio to a file"""
         raise NotImplementedError("save_audio() is not implemented")
@@ -63,8 +66,9 @@ class ttsEngine:
         raise NotImplementedError("selected_engine() is not implemented")
 
 
-class coquiTTS(ttsEngine):
+class CoquiTTS(TTSEngine):
     """Coqui TTS engine"""
+
     def __init__(self, model: str = "tts_models/multilingual/multi-dataset/your_tts", speaker_file: str = None, **kwargs):
         """Coqui TTS engine"""
         # importing this here because it takes a while to load
@@ -96,8 +100,9 @@ class coquiTTS(ttsEngine):
         return "coquiTTS"
 
 
-class googleTTS(ttsEngine):
+class GoogleTTS(TTSEngine):
     """Google Translate TTS engine"""
+
     def __init__(self, lang: str = 'en', accent: str = 'com.au'):
         """Google Translate TTS engine"""
         self.lang = lang
@@ -115,8 +120,9 @@ class googleTTS(ttsEngine):
         return "googleTTS"
 
 
-class systemTTS(ttsEngine):
+class SystemTTS(TTSEngine):
     """System TTS engine"""
+
     def __init__(self, rate: int = 150):
         """System TTS engine"""
         self.engine = pyttsx3.init()
@@ -150,13 +156,13 @@ coqui_names = ["c", "coqui"]
 all_tts_names = google_names + system_names + coqui_names
 
 
-def get_tts_engine(engine: str, **kwargs) -> ttsEngine:
+def get_tts_engine(engine: str, **kwargs) -> TTSEngine:
     """Get a TTS engine based on a string"""
     if engine in google_names:
-        return googleTTS(**kwargs)
+        return GoogleTTS(**kwargs)
     elif engine in system_names:
-        return systemTTS(**kwargs)
+        return SystemTTS(**kwargs)
     elif engine in coqui_names:
-        return coquiTTS(**kwargs)
+        return CoquiTTS(**kwargs)
 
     raise ValueError("Unknown engine: " + engine)

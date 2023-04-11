@@ -1,5 +1,5 @@
 import pytest
-from reddit_to_video.scraping.urlValidator import get_clip_service_from_url, ClipService
+from reddit_to_video.scraping.validator import get_clip_service_from_url, ClipService
 
 
 clip_urls = {

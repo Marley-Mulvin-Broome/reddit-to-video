@@ -19,13 +19,13 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 from moviepy.video.compositing.concatenate import concatenate_videoclips
 
-from reddit_to_video.exceptions import EmptyCollectionError, OutputPathValidationError
+from reddit_to_video.video.script import VideoScript
+from reddit_to_video.video.scriptelement import ScriptElement
+from reddit_to_video.video.export_settings import ExportSettings
 from reddit_to_video.utility import can_write_to_file, write_temp
-from reddit_to_video.video.videoScript import VideoScript
-from reddit_to_video.video.scriptElement import ScriptElement
-from reddit_to_video.video.videoScript import VideoScript
-from reddit_to_video.video.exportSettings import ExportSettings
-from reddit_to_video.video.audio import normalise_audio_bytes
+from reddit_to_video.exceptions import EmptyCollectionError, OutputPathValidationError
+from reddit_to_video.audio import normalise_audio_bytes
+
 
 def createCommentClip(script_element: ScriptElement):
     """Creates a VideoClip from a ScriptElement in the format of a reddit comment"""

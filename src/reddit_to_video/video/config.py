@@ -36,10 +36,9 @@ Example config file
 """
 
 
-
-from reddit_to_video.tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
+from reddit_to_video.video.export_settings import ExportSettings
+from reddit_to_video.video.tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
 from reddit_to_video.exceptions import ConfigKeyError, DirectoryNotFoundError
-from .exportSettings import ExportSettings
 
 
 from os.path import isfile as is_file
@@ -85,6 +84,7 @@ def validate_json_val(json, key, val_type, optional=False, in_list=None, check_f
 
 class VideoConfig:
     """Video config class"""
+
     def __init__(self, json_object):
         """Initializes a video config"""
         self.json = json_object

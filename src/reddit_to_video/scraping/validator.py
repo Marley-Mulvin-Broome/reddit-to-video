@@ -1,3 +1,18 @@
+"""Validator module used for validating urls specifically video platforms
+
+Classes:
+    ClipService: Enum representing a video platform
+
+Functions:
+    validate_url: Validates a url and returns the service it belongs to
+    get_clip_service_from_url: Returns the service a url belongs to
+    is_valid_twitch_clip_url: Returns true if the url is a valid twitch clip url
+    is_valid_youtube_url: Returns true if the url is a valid youtube url
+    is_valid_streamable_url: Returns true if the url is a valid streamable url
+    is_valid_kick_url: Returns true if the url is a valid kick url
+
+"""
+
 import re
 from enum import Enum
 

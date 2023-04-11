@@ -45,6 +45,8 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 
 from reddit_to_video.exceptions import OsNotSupportedError
 
+GLOBAL_TIMEOUT = 3000
+
 
 def remove_links_from_text(text: str) -> str:
     """Removes links from text"""
@@ -55,7 +57,7 @@ def remove_links_from_text(text: str) -> str:
 
 def download_img(url: str, destination: str) -> None:
     """Downloads an image from a url to a destination"""
-    img_data = get(url).content
+    img_data = get(url, timeout=GLOBAL_TIMEOUT).content
 
     with open(destination, 'wb') as handler:
         handler.write(img_data)
@@ -64,11 +66,11 @@ def download_img(url: str, destination: str) -> None:
 def get_audio_duration(audio_path: str) -> float:
     """Returns the duration of an audio file in seconds"""
     if not is_file(audio_path):
-        raise FileExistsError(
+        raise FileNotFoundError(
             f"get_audio_duration() audio_path {audio_path} is not a file")
 
     if not audio_path.endswith(".mp3"):
-        raise Exception(
+        raise TypeError(
             f"get_audio_duration() audio_path {audio_path} is not an mp3 file")
 
     audio = AudioFileClip(audio_path)
@@ -84,9 +86,10 @@ def get_video_duration(video_path: str) -> float:
 def can_write_to_file(file_path: str) -> bool:
     """Returns True if the file can be written to, False otherwise"""
     try:
-        f = open(file_path, "w")
-        f.close()
-        return True
+        with open(file_path, "w", encoding="utf-8") as file:
+            is_writable = file.writable()
+
+        return is_writable
     except:
         return False
 
@@ -97,20 +100,15 @@ def remove_non_words(text: str) -> str:
     return text
 
 
-
-
 def split_sentences(text: str) -> list:
-    """Splits text into sentences
-    split_sentences regex from https://stackoverflow.com/questions/25735644/python-regex-for-splitting-text-into-sentences-sentence-tokenizing
-    
-    """
+    """Splits text into sentences"""
     return re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
 
 
 def preview_video(video_path: str) -> None:
     """Opens a video file in the default video player"""
     if not is_file(video_path):
-        raise FileExistsError(
+        raise FileNotFoundError(
             f"preview_video() video_path {video_path} is not a file")
 
     if os.name == "nt":
@@ -132,7 +130,7 @@ def write_temp(file_name: str, content) -> str:
 
     file_path = path_join(TEMP_PATH, file_name)
 
-    with open(file_path, "w") as f:
-        f.write(content)
+    with open(file_path, "w") as file:
+        file.write(content)
 
     return file_path

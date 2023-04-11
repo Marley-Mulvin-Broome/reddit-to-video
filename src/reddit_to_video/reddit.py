@@ -1,6 +1,8 @@
 """A wrapper for the praw wrapper of the Reddit API
 
-This module contains the Reddit class, which is a wrapper for the praw wrapper of the Reddit API. This class is used to get posts from Reddit.
+This module contains the Reddit class, 
+which is a wrapper for the praw wrapper of the Reddit API. 
+This class is used to get posts from Reddit.
 
 Classes:
     Reddit: A wrapper for the praw wrapper of the Reddit API
@@ -11,6 +13,7 @@ import praw
 
 class Reddit:
     """A wrapper for the praw wrapper of the Reddit API"""
+
     def __init__(self, client_id, client_secret, user_agent, debug=False):
         """Initializes the Reddit wrapper"""
         self.client_id = client_id

@@ -1,10 +1,19 @@
+"""Module for representing elements of a script
+
+Classes:
+    ScriptElement: 
+        Represents a single element in a VideoScript
+"""
+
 from os.path import isfile as is_file
 
 from reddit_to_video.exceptions import NoAudioError
 from reddit_to_video.utility import get_video_duration, get_audio_duration
 
+
 class ScriptElement:
     """Represents a single element in a VideoScript"""
+
     def __init__(self, text, visual_path, audio_path, id_=-1):
         """Initialises a ScriptElement object"""
         if not is_file(visual_path):
