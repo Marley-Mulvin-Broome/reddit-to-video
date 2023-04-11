@@ -1,0 +1,89 @@
+{
+    "configs": [{
+        "name": "YouTube haiku",
+        "description": "Downloads top videos from r/youtubehaiku this month",
+        "settings": {
+            "type": "video",
+            "subreddit": "youtubehaiku",
+            "sort": "top",
+            "time": "all",
+            "limit": 150,
+            "max_length": 600,
+            "min_length": 300,
+            "min_upvotes": 100,
+            "max_video_length": 30,
+            "end_card_footage": "E:\\YT\\EndCard.mp4",
+            "video_break_footage": "E:\\YT\\transitions\\TV Static.mp4",
+            "target_resolution": {
+                "width": 1920,
+                "height": 1080
+            },
+            "export_settings": {
+                "codec": "mpeg4",
+                "bitrate": "16000k",
+                "fps": 30,
+                "threads": 10,
+                "compression": "UltraFast"
+            }
+        }
+    },
+    {
+        "name": "YouTube haiku Normalise Test",
+        "description": "Downloads top videos from r/youtubehaiku this month",
+        "settings": {
+            "type": "video",
+            "subreddit": "youtubehaiku",
+            "sort": "top",
+            "time": "all",
+            "limit": 25,
+            "max_length": 120,
+            "min_length": 0,
+            "min_upvotes": 100,
+            "max_video_length": 30,
+            "end_card_footage": "E:\\YT\\EndCard.mp4",
+            "video_break_footage": "E:\\YT\\transitions\\TV Static.mp4",
+            "normalise_audio": -14,
+            "target_resolution": {
+                "width": 1920,
+                "height": 1080
+            },
+            "export_settings": {
+                "codec": "mpeg4",
+                "bitrate": "16000k",
+                "fps": 30,
+                "threads": 10,
+                "compression": "UltraFast"
+            }
+        }
+    },
+    {
+        "name": "YouTube fightporn",
+        "description": "Downloads top videos from r/fightporn",
+        "settings": {
+            "type": "video",
+            "subreddit": "fightporn",
+            "sort": "top",
+            "time": "all",
+            "limit": 150,
+            "max_length": 660,
+            "min_length": 300,
+            "min_upvotes": 100,
+            "max_video_length": 40,
+            "end_card_footage": "E:\\YT\\EndCard.mp4",
+            "video_break_footage": "E:\\YT\\transitions\\TV Static.mp4",
+            "normalise_audio": -14,
+            "target_resolution": {
+                "width": 1920,
+                "height": 1080
+            },
+            "export_settings": {
+                "codec": "mpeg4",
+                "bitrate": "10000k",
+                "fps": 60,
+                "threads": 10,
+                "compression": "UltraFast"
+            }
+        }
+    }
+    ]
+}

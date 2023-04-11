@@ -1,0 +1,16 @@
+name: Ruff
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Ruff Check
+      uses: jpetrucciani/ruff-check@0.0.239
+      with:
+        path: './src'

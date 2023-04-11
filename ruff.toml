@@ -1,0 +1,1 @@
+ignore = ["E501", "E722"] # Ignore line length and bare excepts
