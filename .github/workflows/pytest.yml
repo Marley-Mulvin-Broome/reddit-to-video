@@ -4,16 +4,12 @@ on: [push]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ["3.7"]
     steps:
     - uses: actions/checkout@v3
-    - name: Ruff Check
-      uses: jpetrucciani/ruff-check@0.0.239
-      with:
-        flags: '--exclude tests/'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:

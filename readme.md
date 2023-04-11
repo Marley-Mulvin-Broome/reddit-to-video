@@ -1,7 +1,8 @@
 
 # Reddit To Video
 
-![Pylint](https://github.com/Marley-Mulvin-Broome/reddit-to-video/actions/workflows/pylint.yml/badge.svg)
+![Ruff Linting](https://github.com/Marley-Mulvin-Broome/reddit-to-video/actions/workflows/ruff.yml/badge.svg)
+![Pytest](https://github.com/Marley-Mulvin-Broome/reddit-to-video/actions/workflows/pytest.yml/badge.svg)
 
 Reddit to video is a script that scrapes reddit for posts and / or comments, compiling them into those horrible videos you see on YouTube and TikTok!
 
