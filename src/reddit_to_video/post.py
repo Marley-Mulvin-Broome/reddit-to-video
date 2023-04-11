@@ -8,7 +8,7 @@ from os.path import join as path_join
 def concat_comment_id(comment_id: str) -> str:
     return f"t1_{comment_id}"
 
-
+# TODO: Refactor this class to be more readable, detect images automatically
 class Post:
     def __init__(self, url: str, post_id: int, has_image: bool = False):
         self.post_id = post_id

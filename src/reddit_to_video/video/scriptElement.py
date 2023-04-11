@@ -5,7 +5,9 @@ from os.path import isfile as is_file
 
 
 class ScriptElement:
+    """Represents a single element in a VideoScript"""
     def __init__(self, text, visual_path, audio_path, id_=-1):
+        """Initialises a ScriptElement object"""
         if not is_file(visual_path):
             raise Exception(
                 f"ScriptElement() visual_path {visual_path} is not a file")
@@ -22,10 +24,12 @@ class ScriptElement:
         self.duration = self.calculate_duration()
 
     def calculate_duration(self):
+        """Calculates the duration of the ScriptElement, choosing the highest duration out of the visuald and audio if present"""
         return max(self.visual_duration, self.audio_duration)
 
     @property
     def visual_duration(self):
+        """Returns the duration of the visual in seconds, or 0 if not a video"""
         if not self.is_video:
             return 0
 
@@ -33,6 +37,7 @@ class ScriptElement:
 
     @property
     def audio_duration(self):
+        """Returns the duration of the audio in seconds, or the visual duration if not a video"""
         if self.audio_path is None or self.audio_path == "":
             if self.is_video:
                 return self.visual_duration
@@ -44,4 +49,5 @@ class ScriptElement:
 
     @property
     def is_video(self):
+        """Returns True if the visual is a video, False otherwise"""
         return self.visual_path.endswith(".mp4") or self.visual_path.endswith(".avi")

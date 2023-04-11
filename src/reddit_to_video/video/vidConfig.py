@@ -51,6 +51,7 @@ class dotdict(dict):
 
 
 def validate_json_val(json, key, val_type, optional=False, in_list=None, check_file=False, check_dir=False):
+    """Validates a value in a json object, based on various flags"""
     if key not in json and optional:
         return
     if key not in json:
@@ -73,7 +74,9 @@ def validate_json_val(json, key, val_type, optional=False, in_list=None, check_f
 
 
 class VideoConfig:
+    """Video config class"""
     def __init__(self, json_object):
+        """Initializes a video config"""
         self.json = json_object
 
         self.validate_config()
@@ -82,9 +85,11 @@ class VideoConfig:
             **self._settings["export_settings"])
 
     def has_setting(self, setting_name: str) -> bool:
+        """Checks if a setting exists"""
         return setting_name in self._settings
 
     def validate_config(self):
+        """Validates a config's keys and values"""
         validate_json_val(self.json, "name", str)
         self.name = self.json["name"]
         validate_json_val(self.json, "description", str)
@@ -95,6 +100,7 @@ class VideoConfig:
         self.validate_settings()
 
     def validate_settings(self):
+        """Validates a config's settings keys and values"""
         self.settings = dotdict(self._settings)
         validate_json_val(self._settings, "type", str, video_types)
 
@@ -114,6 +120,7 @@ class VideoConfig:
         self.validate_export_settings()
 
     def validate_comment_settings(self):
+        """Validates config settings for comment videos"""
         validate_json_val(self._settings, "background_footage",
                           str, check_file=True)
 
@@ -121,6 +128,7 @@ class VideoConfig:
         self.tts = dotdict(self._settings["tts"])
 
     def validate_video_settings(self):
+        """Validates config settings for video videos"""
         validate_json_val(self._settings, "end_card_footage",
                           str, optional=True, check_file=True)
         validate_json_val(self._settings, "video_break_footage", str,
@@ -142,6 +150,7 @@ class VideoConfig:
                 self._settings["target_resolution"])
 
     def validate_tts(self):
+        """Validates config settings for TTS"""
         tts = self._settings["tts"]
         validate_json_val(tts, "engine", str, all_tts_names)
         validate_json_val(tts, "kwargs", dict)
@@ -164,6 +173,7 @@ class VideoConfig:
             raise Exception(f"Config: Invalid TTS engine {tts['engine']}")
 
     def validate_export_settings(self):
+        """Validates config settings for exporting"""
         export_settings = self._settings["export_settings"]
 
         validate_json_val(export_settings, "codec", str)
@@ -178,6 +188,7 @@ class VideoConfig:
 
     @staticmethod
     def load_configs(file_path) -> list:
+        """Loads a list of configs from a json file"""
         if not is_file(file_path):
             raise Exception(f"Config: File {file_path} does not exist")
 

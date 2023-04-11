@@ -20,12 +20,14 @@ from moviepy.audio.io.AudioFileClip import AudioFileClip
 
 
 def remove_links_from_text(text: str) -> str:
+    """Removes links from text"""
     text = re.sub(r'http\S+', '', text)
     text = re.sub(r'www\S+', '', text)
     return text
 
 
 def download_img(url, destination) -> None:
+    """Downloads an image from a url to a destination"""
     img_data = get(url).content
 
     with open(destination, 'wb') as handler:
@@ -33,6 +35,7 @@ def download_img(url, destination) -> None:
 
 
 def get_audio_duration(audio_path: str) -> float:
+    """Returns the duration of an audio file in seconds"""
     if not is_file(audio_path):
         raise FileExistsError(
             f"get_audio_duration() audio_path {audio_path} is not a file")
@@ -46,11 +49,13 @@ def get_audio_duration(audio_path: str) -> float:
 
 
 def get_video_duration(video_path: str) -> float:
+    """Returns the duration of a video file in seconds"""
     video = VideoFileClip(video_path)
     return video.duration
 
 
 def can_write_to_file(file_path: str) -> bool:
+    """Returns True if the file can be written to, False otherwise"""
     try:
         f = open(file_path, "w")
         f.close()
@@ -60,6 +65,7 @@ def can_write_to_file(file_path: str) -> bool:
 
 
 def remove_non_words(text: str) -> str:
+    """Removes non-word characters from text"""
     text = re.sub(r'[^\w\s]|_', '', text)
     return text
 
@@ -68,6 +74,7 @@ def remove_non_words(text: str) -> str:
 
 
 def split_sentences(text: str) -> list:
+    """Splits text into sentences"""
     return re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', text)
 
 
@@ -76,6 +83,7 @@ def split_sentences(text: str) -> list:
 
 @contextmanager
 def suppress_stdout():
+    """Suppresses stdout"""
     with open(os.devnull, "w") as devnull:
         old_stdout = sys.stdout
         sys.stdout = devnull
@@ -86,6 +94,7 @@ def suppress_stdout():
 
 
 def preview_video(video_path: str) -> None:
+    """Opens a video file in the default video player"""
     if not is_file(video_path):
         raise FileExistsError(
             f"preview_video() video_path {video_path} is not a file")
@@ -103,6 +112,7 @@ TEMP_PATH = "output/temp"
 
 
 def write_temp(file_name: str, content) -> str:
+    """Writes content to a file in the temp directory"""
     if not is_dir(TEMP_PATH):
         make_dir(TEMP_PATH)
 

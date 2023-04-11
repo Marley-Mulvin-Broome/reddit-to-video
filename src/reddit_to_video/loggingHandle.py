@@ -5,10 +5,13 @@ tqdm_handler = None
 
 
 class TqdmLoggingHandler(logging.Handler):
+    """Logging handler that outputs to tqdm"""
     def __init__(self, level=logging.NOTSET):
+        """Initialises the logging handler"""
         super().__init__(level)
 
     def emit(self, record):
+        """Emits a log message"""
         try:
             msg = self.format(record)
             tqdm.tqdm.write(msg)
@@ -20,7 +23,7 @@ class TqdmLoggingHandler(logging.Handler):
 
 
 def setup_logging(level=logging.INFO):
-    global tqdm_handler
+    """Sets up logging"""
     tqdm_handler = TqdmLoggingHandler()
 
     logging.basicConfig(
@@ -31,7 +34,6 @@ def setup_logging(level=logging.INFO):
 
 
 def remove_logger():
-    global tqdm_handler
-
+    """Removes the tqgm logger"""
     if tqdm_handler is not None:
         logging.getLogger().removeHandler(tqdm_handler)

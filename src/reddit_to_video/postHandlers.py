@@ -24,6 +24,7 @@ from loggingHandle import setup_logging, remove_logger
 
 
 def prompt_preview_vid(output_location: str):
+    """Prompts the user if they want to preview the video"""
     will_preview = prompt_bool("Preview video? (y/n): ")
 
     if not will_preview:
@@ -37,6 +38,7 @@ def prompt_preview_vid(output_location: str):
 
 
 def handle_comment_post(selected_post, config: VideoConfig):
+    """Handles a comment post"""
     tts = get_tts_engine(config.tts.engine, **config.tts.kwargs)
 
     print(f"Loaded {repr(tts)} TTS engine")
@@ -158,6 +160,7 @@ POST_VIDEO_OUTPUT = "output/posts/"
 
 
 def get_video_from_post(post: Submission) -> ScriptElement:
+    """Gets a video from a post"""
     output_path = path_join(POST_VIDEO_OUTPUT, f"{post.id}.mp4")
 
     if is_file(output_path):

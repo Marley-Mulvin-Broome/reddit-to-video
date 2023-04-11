@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 
 class Compression(Enum):
+    """Compression presets for ffmpeg"""
     UltraFast: str = "ultrafast"
     SuperFast: str = "superfast"
     VeryFast: str = "veryfast"
@@ -17,6 +18,7 @@ class Compression(Enum):
 
 @dataclass
 class ExportSettings:
+    """Export settings for videos"""
     codec: str = "libx264"
     bitrate: str = "5000k"
 

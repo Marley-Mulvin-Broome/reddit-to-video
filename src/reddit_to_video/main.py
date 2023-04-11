@@ -25,6 +25,7 @@ POSTS_PATH = path_join(getcwd(), "output/posts/")
 
 
 def load_config():
+    """Loads the config file"""
     config = ConfigParser()
     try:
         config.read("config.ini")
@@ -36,6 +37,7 @@ def load_config():
 
 
 def load_user_configs(dir_path):
+    """Loads all user configs from a directory"""
     if not is_dir(dir_path):
         raise Exception(f"Config: Directory {dir_path} does not exist")
 
@@ -51,20 +53,23 @@ def load_user_configs(dir_path):
 
 
 def create_user_agent(username, version):
+    """Creates a user agent for the Reddit API"""
     return f"Python:RedditToVideo:v{version} (by /u/{username})"
 
 
 def clear_cache():
+    """Clears the cache of downloaded / generated videos, screenshots, and audio from video creation"""
     for file_ in list_dir(COMMENTS_PATH):
         if file_.endswith(".png") or file_.endswith(".mp3"):
             remove_file(path_join(COMMENTS_PATH, file_))
 
     for file_ in list_dir(POSTS_PATH):
-        if file_.endswith(".png") or file_.endswith(".mp3"):
+        if file_.endswith(".png") or file_.endswith(".mp3") or file_.endswith(".mp4"):
             remove_file(path_join(POSTS_PATH, file_))
 
 
 def load_args():
+    """Loads the arguments from the command line"""
     parser = ArgumentParser(
         description="Creates a video from top posts from a subreddit", add_help=False)
 
@@ -85,12 +90,8 @@ def load_args():
     return parser.parse_args(), parser
 
 
-def prompt_file_name():
-    print("Enter a file name for output (no extension): ", end="")
-    return input()
-
-
 def handle_system_args(parser, args, config, user_agent):
+    """Handles the system arguments"""
     # Handles system args here
     if 'help' in args:
         parser.print_help()
@@ -125,6 +126,7 @@ def handle_system_args(parser, args, config, user_agent):
 
 
 def check_ouput_dir():
+    """Checks if the output directories exist, and creates them if they don't"""
     if not is_dir(OUTPUT_PATH):
         print(f"Creating output path @ {OUTPUT_PATH}")
         make_dir(OUTPUT_PATH)
@@ -139,6 +141,7 @@ def check_ouput_dir():
 
 
 def main():
+    """Entry point for reddit to video"""
     args, parser = load_args()
     config = load_config()
     user_agent = create_user_agent(
@@ -172,7 +175,7 @@ def main():
                ["client_secret"], user_agent, debug=False)
 
     if chosen_config.settings["type"].lower() == "comment":
-
+        
         posts = r.get_top_posts(chosen_config.settings.subreddit, limit=10)
 
         chosen_post = prompt_list(

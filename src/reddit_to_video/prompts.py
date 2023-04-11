@@ -5,6 +5,7 @@ from os.path import exists as path_exists
 
 
 def prompt_list(options: list[tuple], prompt_char: str = ">") -> any:
+    """Prompts the user to choose from a list of options"""
     for i, option in enumerate(options):
         print(f"[{i + 1}] {option[0]}")
 
@@ -19,6 +20,7 @@ def prompt_list(options: list[tuple], prompt_char: str = ">") -> any:
 
 
 def prompt_bool(prompt: str) -> bool:
+    """Prompts the user to choose yes or no"""
     while True:
         try:
             choice = input(prompt)
@@ -32,6 +34,7 @@ def prompt_bool(prompt: str) -> bool:
 
 
 def prompt_int(prompt: str) -> int:
+    """Prompts the user to enter an integer"""
     while True:
         try:
             return int(input(prompt))
@@ -40,6 +43,7 @@ def prompt_int(prompt: str) -> int:
 
 
 def prompt_str(prompt: str) -> str:
+    """Prompts the user to enter a string"""
     while True:
         try:
             return input(prompt)
@@ -48,6 +52,7 @@ def prompt_str(prompt: str) -> str:
 
 
 def prompt_write_file(prompt: str, overwrite=False) -> str:
+    """Prompts the user to enter a file path to write to"""
     while True:
         file = input(prompt)
 
@@ -63,6 +68,7 @@ def prompt_write_file(prompt: str, overwrite=False) -> str:
 
 
 def prompt_file(prompt: str) -> str:
+    """Prompts the user to enter a file path to read from"""
     while True:
         file = input(prompt)
 

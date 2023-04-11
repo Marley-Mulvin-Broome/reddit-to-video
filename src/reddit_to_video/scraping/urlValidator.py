@@ -22,6 +22,7 @@ reddit_clip_pattern = re.compile(r".*www.reddit.com/r/.*/comments/.*")
 
 
 class ClipService(Enum):
+    """Enum for the different clip services"""
     NONE = 0
     TWITCH = 1
     STREAMABLE = 2
@@ -31,10 +32,12 @@ class ClipService(Enum):
 
 
 def get_urls_from_string(string: str) -> list:
+    """Returns a list of urls from a string"""
     return url_pattern.findall(string)
 
 
 def get_clip_service_from_url(url: str) -> ClipService:
+    """Returns the clip service from a url"""
     if is_valid_twitch_clip_url(url):
         return ClipService.TWITCH
     elif is_valid_streamable_clip(url):
@@ -50,10 +53,12 @@ def get_clip_service_from_url(url: str) -> ClipService:
 
 
 def is_valid_url(url: str) -> bool:
+    """Returns true if the url is valid"""
     return url_pattern.match(url) is not None
 
 
 def is_valid_reddit_clip_url(url: str) -> bool:
+    """Returns true if the url is a reddit clip"""
     if reddit_clip_pattern.match(url) is None:
         return False
 
@@ -61,6 +66,7 @@ def is_valid_reddit_clip_url(url: str) -> bool:
 
 
 def is_valid_twitch_clip_url(url: str) -> bool:
+    """Returns true if the url is a twitch clip"""
     if twitch_clip_pattern.match(url) is None and twitch_channel_clip_pattern.match(url) is None:
         return False
 
@@ -68,6 +74,7 @@ def is_valid_twitch_clip_url(url: str) -> bool:
 
 
 def is_valid_streamable_clip(url: str) -> bool:
+    """Returns true if the url is a streamable clip"""
     if streamable_clip_pattern.match(url) is None:
         return False
 
@@ -75,6 +82,7 @@ def is_valid_streamable_clip(url: str) -> bool:
 
 
 def is_valid_kick_clip(url: str) -> bool:
+    """Returns true if the url is a kick clip"""
     if kick_clip_pattern.match(url) is None:
         return False
 
@@ -82,6 +90,7 @@ def is_valid_kick_clip(url: str) -> bool:
 
 
 def is_valid_youtube_url(url: str) -> bool:
+    """Returns true if the url is a youtube clip"""
     if youtube_clip_pattern.match(url) is None and youtube_share_clip_pattern.match(url) is None:
         return False
 

@@ -17,6 +17,7 @@ from moviepy.video.compositing.concatenate import concatenate_videoclips
 
 
 def createCommentClip(script_element: ScriptElement):
+    """Creates a VideoClip from a ScriptElement in the format of a reddit comment"""
     if not is_file(script_element.visual_path):
         raise Exception(
             f"createClip() visual path {script_element.visual_path} is not a file")
@@ -48,6 +49,7 @@ def createCommentClip(script_element: ScriptElement):
 
 
 def composeCommentVideo(output_file: str, background_footage: str, script: VideoScript, export_settings: ExportSettings = None, logger=None):
+    """Creates a reddit comment video from a VideoScript and a background footage"""
     if not is_file(background_footage):
         raise FileExistsError(
             f"composeCommentVideo() background footage {background_footage} is not a file")
@@ -86,6 +88,7 @@ def composeCommentVideo(output_file: str, background_footage: str, script: Video
 
 
 def composeVideoVideo(output_file: str, script: VideoScript, target_resolution: tuple[int, int] = None, normalise_audio: float = None, export_settings: ExportSettings = None, logger=None):
+    """Creates a post based video from a VideoScript, compiling multiple videos into one"""
     if len(script) == 0:
         raise EmptyCollectionError("composeVideoVideo() script is empty")
 
