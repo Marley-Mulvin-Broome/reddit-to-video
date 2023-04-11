@@ -36,13 +36,15 @@ The current options for text to speech at the moment are: your systems, google t
 Run `main.py -sv`  to see a list of your available system voices. To use one of these voices, you must set the `voice` key in your TTS settings.
 For example:
 
-    "tts": {
-        "engine": "system",
-        "kwargs": {
-            "voice": "your voice here",
-            "rate": 150
-        }
+```json
+"tts": {
+    "engine": "system",
+    "kwargs": {
+        "voice": "your voice here",
+        "rate": 150
     }
+}
+```
 
 ### **Google Translate TTS**
 
@@ -50,12 +52,14 @@ Google translate TTS supports both language and accents. To see a list of suppor
 
 An example of implementing an English speaker with an australia accent would look like this:
 
-    "tts": {
-        "engine": "google",
-        "kwargs": {
-            "accent": "AUSTRALIA"
-        }
+```json
+"tts": {
+    "engine": "google",
+    "kwargs": {
+        "accent": "AUSTRALIA"
     }
+}
+```
 
 ### **Coqui TTS**
 
@@ -63,13 +67,15 @@ Coqui TTS offers a [large variety of different models](https://tts.readthedocs.i
 
 The `kwargs` tag in the configuration passed all of the kwargs to coqui itself directly, meaning you can put any argument you would as if you were directly calling the Coqui constructor.
 
-    "tts": {
-        "engine": "coqui",
-        "kwargs": {
-            "model_name": "tts_models/multilingual/multi-dataset/your_tts",
-            "speaker_wav": "E:\speaker.wav"
-        }
+```json
+"tts": {
+    "engine": "coqui",
+    "kwargs": {
+        "model_name": "tts_models/multilingual/multi-dataset/your_tts",
+        "speaker_wav": "E:\\speaker.wav"
     }
+}
+```
 
 # FAQ
 
