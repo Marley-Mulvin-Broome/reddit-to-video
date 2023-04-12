@@ -6,10 +6,9 @@ from moviepy.video.io.VideoFileClip import VideoFileClip
 from reddit_to_video.scraping.scraper import retreieve_content_from_url
 from reddit_to_video.scraping.scraper import get_soup_from_url
 from reddit_to_video.scraping.scraper import download_from_video_tag
-from reddit_to_video.scraping.scraper import download_kick_video
 from reddit_to_video.scraping.scraper import download_reddit_video
-from reddit_to_video.scraping.scraper import download_streamable_video
 from reddit_to_video.scraping.scraper import get_html_from_url
+from reddit_to_video.scraping.scraper import download_youtube_video
 
 
 def successfully_downloaded_video_file(fn: str) -> bool:
@@ -32,6 +31,13 @@ def test_get_html_from_url():
         assert False, e
 
 
+def test_get_html_from_invalid_url():
+    url = "https://www.google.com/invalid"
+
+    with pytest.raises(Exception):
+        get_html_from_url(url)
+
+
 def test_get_soup_from_url():
     url = "https://www.google.com"
     try:
@@ -40,6 +46,13 @@ def test_get_soup_from_url():
         assert isinstance(soup, BeautifulSoup) is True
     except Exception as e:
         assert False, e
+
+
+def test_get_soup_from_invalid_url():
+    url = "https://www.google.com/invalid"
+
+    with pytest.raises(Exception):
+        get_soup_from_url(url)
 
 
 def test_retreieve_content_from_url():
@@ -51,18 +64,31 @@ def test_retreieve_content_from_url():
         assert False, e
 
 
-# These functions cause issues when being tested so removing them
+def test_retrieve_content_from_url_invalid_url():
+    url = "https://www.google.com/invalid"
+    with pytest.raises(Exception):
+        retreieve_content_from_url(url)
+
+
 # def test_download_reddit_video(tmp_path):
 #     url = "https://www.reddit.com/r/fightporn/comments/e7i8op/stopped_to_appreciate_the_duck/"
 #     try:
-#         from pathlib import WindowsPath
-#         file_path: WindowsPath = tmp_path / "test_reddit.mp4"
-#         file_path.touch()
+#         file_path = str(tmp_path / "test_reddit.mp4")
 
 #         download_reddit_video(url, str(file_path))
 #         assert successfully_downloaded_video_file(str(file_path))
 #     except Exception as e:
 #         assert False, e
+
+
+def test_download_youtube_video(tmp_path):
+    url = "https://www.youtube.com/watch?v=6ZfuNTqbHE8"
+    try:
+        file_path = str(tmp_path / "test_youtube.mp4")
+        download_youtube_video(url, file_path)
+        assert successfully_downloaded_video_file(file_path)
+    except Exception as e:
+        assert False, e
 
 
 # def test_download_streamable_video(tmp_path):

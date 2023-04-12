@@ -41,7 +41,7 @@ class TTSAccents(Enum):
         return cls.__members__.keys()
 
 
-class TTSEngine:
+class TTSEngine:  # pragma: no cover
     """Base class for TTS engines"""
 
     def save_audio(self, text: str, filename: str) -> None:
@@ -66,7 +66,7 @@ class TTSEngine:
         raise NotImplementedError("selected_engine() is not implemented")
 
 
-class CoquiTTS(TTSEngine):
+class CoquiTTS(TTSEngine):  # pragma: no cover
     """Coqui TTS engine"""
 
     def __init__(self, model: str = "tts_models/multilingual/multi-dataset/your_tts", speaker_file: str = None, **kwargs):
@@ -87,7 +87,7 @@ class CoquiTTS(TTSEngine):
         if self.speaker_file is not None:
             self.kwargs['speaker_wav'] = self.speaker_file
 
-    def save_audio(self, text: str, filename: str) -> None:
+    def save_audio(self, text: str, filename: str) -> None:  # pragma: no cover
         """Save the audio to a file"""
         text = remove_links_from_text(text)
         self.tts.tts_to_file(text, file_path=filename, **self.kwargs)
@@ -108,13 +108,18 @@ class GoogleTTS(TTSEngine):
         self.lang = lang
         self.accent = accent
 
-    def save_audio(self, text: str, filename: str) -> None:
+    def save_audio(self, text: str, filename: str) -> None:  # pragma: no cover
         """Save the audio to a file"""
         text = remove_links_from_text(text)
         text = remove_non_words(text)
         # print("Writing text" + text)
         tts = gtts.gTTS(text, lang=self.lang, tld=self.accent)
         tts.save(filename)
+
+    @property
+    def selected_engine(self) -> str:
+        """Get the selected engine"""
+        return repr(self)
 
     def __repr__(self) -> str:
         return "googleTTS"
@@ -128,7 +133,7 @@ class SystemTTS(TTSEngine):
         self.engine = pyttsx3.init()
         self.engine.setProperty('rate', rate)
 
-    def save_audio(self, text: str, filename: str) -> None:
+    def save_audio(self, text: str, filename: str) -> None:  # pragma: no cover
         """Save the audio to a file"""
         text = remove_links_from_text(text)
         self.engine.save_to_file(text, filename)
@@ -144,6 +149,11 @@ class SystemTTS(TTSEngine):
     def run(self) -> None:
         """Run the TTS engine"""
         self.engine.runAndWait()
+
+    @property
+    def selected_engine(self) -> str:
+        """Get the selected engine"""
+        return repr(self)
 
     def __repr__(self) -> str:
         return "systemTTS"
@@ -163,6 +173,6 @@ def get_tts_engine(engine: str, **kwargs) -> TTSEngine:
     elif engine in system_names:
         return SystemTTS(**kwargs)
     elif engine in coqui_names:
-        return CoquiTTS(**kwargs)
+        return CoquiTTS(**kwargs)  # pragma: no cover
 
     raise ValueError("Unknown engine: " + engine)

@@ -1,5 +1,5 @@
 import pytest
-from reddit_to_video.scraping.validator import get_clip_service_from_url, ClipService
+from reddit_to_video.scraping.validator import get_clip_service_from_url, is_valid_url, ClipService
 
 
 clip_urls = {
@@ -17,8 +17,31 @@ clip_urls = {
     "https://v.redd.it/yw6nan929np31": ClipService.REDDIT
 }
 
+valid_urls = [
+    "https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll",
+    "https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll?t=00h00m00s",
+    "www.youtube.com"
+]
+
+urls_from_text = [
+    ("This is a test https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll",
+     "https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll"),
+    ("This is a test https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll?t=00h00m00s",
+     "https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll?t=00h00m00s"),
+    ("Lets add brackets (https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll)",
+     "https://clips.twitch.tv/AbstemiousSincereSalamanderPeteZaroll"),
+    ("without https www.youtube.com", "www.youtube.com"),
+    ("www.youtube.com", "www.youtube.com"),
+]
+
 
 @pytest.mark.filterwarnings("ignore:.*is deprecated.*")
 @pytest.mark.parametrize("url, service", list(clip_urls.items()))
 def test_get_clip_service_from_url(url, service):
     assert get_clip_service_from_url(url).value == service.value
+
+
+@pytest.mark.filterwarnings("ignore:.*is deprecated.*")
+@pytest.mark.parametrize("url", valid_urls)
+def test_is_valid_url(url):
+    assert is_valid_url(url) is True

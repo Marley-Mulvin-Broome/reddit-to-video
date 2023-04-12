@@ -6,23 +6,42 @@ Classes:
 """
 
 from os.path import isfile as is_file
+from typing import Union
 
 from reddit_to_video.exceptions import NoAudioError
-from reddit_to_video.utility import get_video_duration, get_audio_duration
+from reddit_to_video.utility import get_video_duration, get_audio_duration, get_file_extension
+
+valid_audio_file_types = [".mp3", ".wav"]
+valid_visual_file_types = [".mp4", ".avi", ".png", ".jpg", ".jpeg"]
 
 
 class ScriptElement:
     """Represents a single element in a VideoScript"""
 
-    def __init__(self, text, visual_path, audio_path, id_=-1):
+    def __init__(self, text: str, visual_path: str, audio_path: Union[str, None], id_: int = -1):
         """Initialises a ScriptElement object"""
+        if not isinstance(text, str):
+            raise TypeError(
+                f"ScriptElement() text '{text}' is not a string")
+
+        if not isinstance(id_, int):
+            raise TypeError(
+                f"ScriptElement() id_ '{id_}' is not an integer")
+
         if not is_file(visual_path):
-            raise Exception(
+            raise FileNotFoundError(
                 f"ScriptElement() visual_path {visual_path} is not a file")
+        if get_file_extension(visual_path) not in valid_visual_file_types:
+            raise ValueError(
+                f"ScriptElement() visual_path {visual_path} is not a valid visual file type")
         if audio_path is not None and audio_path != "":
             if not is_file(audio_path):
-                raise Exception(
+                raise FileNotFoundError(
                     f"ScriptElement() audio_path {audio_path} is not a file")
+
+            if get_file_extension(audio_path) not in valid_audio_file_types:
+                raise ValueError(
+                    f"ScriptElement() audio_path {audio_path} is not a valid audio file type")
 
         self.id = id_
         self.text = text

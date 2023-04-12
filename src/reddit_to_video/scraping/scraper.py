@@ -54,7 +54,7 @@ def download_youtube_video(url: str, output: str):
     youtube_obj.streams.get_highest_resolution().download(filename=output)
 
 
-def download_streamable_video(url: str, output: str):
+def download_streamable_video(url: str, output: str):  # pragma: no cover
     """Downloads a streamable video to a file.
     The output must be a path that can be written to"""
     if not is_valid_streamable_clip(url):
@@ -64,7 +64,7 @@ def download_streamable_video(url: str, output: str):
     return download_from_video_tag_js(url, output)
 
 
-def download_kick_video(url: str, output: str):
+def download_kick_video(url: str, output: str):  # pragma: no cover
     """Downloads a kick video to a file.
     The output must be a path that can be written to"""
     if not is_valid_kick_clip(url):
@@ -74,7 +74,7 @@ def download_kick_video(url: str, output: str):
     return download_from_video_tag_js(url, output)
 
 
-def download_twitch_clip(url: str, output: str) -> None:
+def download_twitch_clip(url: str, output: str) -> None:  # pragma: no cover
     """Downloads a twitch clip to a file.
     The output must be a path that can be written to"""
     if not is_valid_twitch_clip_url(url):
@@ -84,7 +84,7 @@ def download_twitch_clip(url: str, output: str) -> None:
     return download_from_video_tag_js(url, output)
 
 
-def download_from_video_tag_js(url: str, output: str) -> None:
+def download_from_video_tag_js(url: str, output: str) -> None:  # pragma: no cover
     """Downloads a video from a video tag to a file using selenium to load the javascript"""
     # load page with selenium then wait for it to load
     src = ""
@@ -116,7 +116,7 @@ def download_from_link(src: str, output: str):
         f.write(video_content)
 
 
-def download_from_video_tag(url: str, output: str):
+def download_from_video_tag(url: str, output: str):  # pragma: no cover
     """Downloads a video from a video tag to a file.
     The output must be a path that can be written to"""
     # get html
@@ -134,7 +134,7 @@ def download_from_video_tag(url: str, output: str):
     download_from_link(src, output)
 
 
-def download_reddit_video(url: str, output: str) -> str:
+def download_reddit_video(url: str, output: str) -> str:  # pragma: no cover
     """Downloads a reddit video to a file.
     The output must be a path that can be written to"""
 
@@ -161,7 +161,7 @@ def download_reddit_video(url: str, output: str) -> str:
         raise FileExistsError("download_reddit_video() File already exists")
 
 
-def download_by_service(url: str, clip_server: ClipService, output_path: str) -> None:
+def download_by_service(url: str, clip_server: ClipService, output_path: str) -> None:  # pragma: no cover
     """Downloads a clip from a url to a file.
     The output must be a path that can be written to"""
     if clip_server.value == ClipService.TWITCH.value:

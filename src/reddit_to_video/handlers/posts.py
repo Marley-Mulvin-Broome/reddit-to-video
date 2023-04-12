@@ -10,7 +10,7 @@ from praw.models.reddit.submission import Submission
 from tqdm import tqdm
 from proglog import default_bar_logger
 
-from reddit_to_video.scraping.validator import get_clip_service_from_url, get_urls_from_string, ClipService
+from reddit_to_video.scraping.validator import get_clip_service_from_url, ClipService
 from reddit_to_video.scraping.scraper import download_reddit_video, download_by_service
 from reddit_to_video.video.compose import composeVideoVideo
 from reddit_to_video.video.scriptelement import ScriptElement
@@ -43,15 +43,15 @@ def get_video_from_post(post: Submission) -> ScriptElement:
 
     url = post.url
 
-    if post.selftext != "":
-        urls = get_urls_from_string(post.selftext)
+    # if post.selftext != "":
+    #     urls = get_urls_from_string(post.selftext)
 
-        if urls != []:
-            url = urls[0]
-        else:
-            logging.warning(
-                f"Post ({post.id}, {post.title}) has no urls in its text")
-            return None
+    #     if urls != []:
+    #         url = urls[0]
+    #     else:
+    #         logging.warning(
+    #             f"Post ({post.id}, {post.title}) has no urls in its text")
+    #         return None
 
     clip_service = get_clip_service_from_url(url)
 

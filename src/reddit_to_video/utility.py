@@ -65,22 +65,28 @@ def download_img(url: str, destination: str) -> None:
 
 def get_audio_duration(audio_path: str) -> float:
     """Returns the duration of an audio file in seconds"""
+    if not audio_path.endswith(".mp3"):
+        raise ValueError(
+            f"get_audio_duration() audio_path {audio_path} is not an mp3 file")
+
     if not is_file(audio_path):
         raise FileNotFoundError(
             f"get_audio_duration() audio_path {audio_path} is not a file")
 
-    if not audio_path.endswith(".mp3"):
-        raise TypeError(
-            f"get_audio_duration() audio_path {audio_path} is not an mp3 file")
+    clip = AudioFileClip(audio_path)
+    duration = clip.duration
+    del clip
 
-    audio = AudioFileClip(audio_path)
-    return audio.duration
+    return duration
 
 
 def get_video_duration(video_path: str) -> float:
     """Returns the duration of a video file in seconds"""
     video = VideoFileClip(video_path)
-    return video.duration
+    duration = video.duration
+    del video
+
+    return duration
 
 
 def can_write_to_file(file_path: str) -> bool:
@@ -134,3 +140,8 @@ def write_temp(file_name: str, content) -> str:
         file.write(content)
 
     return file_path
+
+
+def get_file_extension(file_path: str) -> str:
+    """Returns the file extension of a file with the dot"""
+    return "." + file_path.split(".")[-1]

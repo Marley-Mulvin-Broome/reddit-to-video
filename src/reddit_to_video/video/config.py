@@ -36,14 +36,15 @@ Example config file
 """
 
 
+from os.path import isfile as is_file
+from os.path import isdir as is_dir
+from json import load as json_load
+from typing import Union
+
 from reddit_to_video.video.export_settings import ExportSettings
 from reddit_to_video.video.tts import TTSAccents, all_tts_names, google_names, system_names, coqui_names
 from reddit_to_video.exceptions import ConfigKeyError, DirectoryNotFoundError
 
-
-from os.path import isfile as is_file
-from os.path import isdir as is_dir
-from json import load as json_load
 
 reddit_sorts = ["relevance", "hot", "top", "new", "comments"]
 reddit_time_filters = ["all", "year", "month", "week", "day", "hour"]
@@ -59,7 +60,7 @@ class dotdict(dict):
     __delattr__ = dict.__delitem__
 
 
-def validate_json_val(json, key, val_type, optional=False, in_list=None, check_file=False, check_dir=False):
+def validate_json_val(json, key, val_type: Union[type, tuple[type]], optional=False, in_list=None, check_file=False, check_dir=False):
     """Validates a value in a json object, based on various flags"""
     if key not in json and optional:
         return
@@ -70,7 +71,7 @@ def validate_json_val(json, key, val_type, optional=False, in_list=None, check_f
 
     if in_list is not None:
         if json[key] not in in_list:
-            raise TypeError(f"Config: Invalid value for {key} ({json[key]})")
+            raise ValueError(f"Config: Invalid value for {key} ({json[key]})")
 
     if check_file:
         if not is_file(json[key]):
@@ -112,12 +113,13 @@ class VideoConfig:
     def validate_settings(self):
         """Validates a config's settings keys and values"""
         self.settings = dotdict(self._settings)
-        validate_json_val(self._settings, "type", str, video_types)
 
         # Global settings
+        validate_json_val(self._settings, "type", str, in_list=video_types)
         validate_json_val(self._settings, "subreddit", str)
-        validate_json_val(self._settings, "sort", str, reddit_sorts)
-        validate_json_val(self._settings, "time", str, reddit_time_filters)
+        validate_json_val(self._settings, "sort", str, in_list=reddit_sorts)
+        validate_json_val(self._settings, "time", str,
+                          in_list=reddit_time_filters)
         validate_json_val(self._settings, "limit", int)
         validate_json_val(self._settings, "max_length", int)
         validate_json_val(self._settings, "min_length", int)
@@ -127,13 +129,14 @@ class VideoConfig:
         elif self._settings["type"] == "video":
             self.validate_video_settings()
 
+        validate_json_val(self._settings, "export_settings", dict)
         self.validate_export_settings()
 
     def validate_comment_settings(self):
         """Validates config settings for comment videos"""
         validate_json_val(self._settings, "background_footage",
                           str, check_file=True)
-
+        validate_json_val(self._settings, "tts", dict)
         self.validate_tts()
         self.tts = dotdict(self._settings["tts"])
 
@@ -144,8 +147,8 @@ class VideoConfig:
         validate_json_val(self._settings, "video_break_footage", str,
                           optional=True, check_file=True)
         validate_json_val(self._settings, "max_video_length", int)
-        validate_json_val(self._settings, "noramlise_audio",
-                          float, optional=True)
+        validate_json_val(self._settings, "normalise_audio", (float, int),
+                          optional=True)
 
         validate_json_val(self._settings, "target_resolution",
                           dict, optional=True)
@@ -162,7 +165,7 @@ class VideoConfig:
     def validate_tts(self):
         """Validates config settings for TTS"""
         tts = self._settings["tts"]
-        validate_json_val(tts, "engine", str, all_tts_names)
+        validate_json_val(tts, "engine", str, in_list=all_tts_names)
         validate_json_val(tts, "kwargs", dict)
 
         self.tts_kwargs = tts["kwargs"]
@@ -178,9 +181,6 @@ class VideoConfig:
 
         elif tts["engine"] in coqui_names:
             validate_json_val(self.tts_kwargs, "model", str)
-
-        else:
-            raise Exception(f"Config: Invalid TTS engine {tts['engine']}")
 
     def validate_export_settings(self):
         """Validates config settings for exporting"""
@@ -200,10 +200,16 @@ class VideoConfig:
     def load_configs(file_path) -> list:
         """Loads a list of configs from a json file"""
         if not is_file(file_path):
-            raise Exception(f"Config: File {file_path} does not exist")
+            raise FileNotFoundError(f"Config: File {file_path} does not exist")
 
-        with open(file_path, "r") as f:
-            json = json_load(f)
+        json = {}
+
+        with open(file_path, "r") as file:
+            json = json_load(file)
+
+        if "configs" not in json:
+            raise ConfigKeyError(
+                f"Config: Missing key 'configs' in config file {file_path}")
 
         return [VideoConfig(config) for config in json["configs"]]
 

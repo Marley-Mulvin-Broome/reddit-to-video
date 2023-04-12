@@ -31,7 +31,7 @@ def load_config():
     """Loads the config file"""
     config = ConfigParser()
     try:
-        config.read("config.ini")
+        config.read(path_join(getcwd(), "config.ini"))
     except FileNotFoundError:
         print(f"Config file not found in {getcwd()} directory. (config.ini)")
         exit_program(1)
@@ -179,8 +179,8 @@ def check_ouput_dir():
 
 def main():
     """Entry point for reddit to video"""
-    args, parser = load_args()
     config = load_config()
+    args, parser = load_args()
     user_agent = create_user_agent(
         config["reddit"]["username"], config["project"]["version"])
 
