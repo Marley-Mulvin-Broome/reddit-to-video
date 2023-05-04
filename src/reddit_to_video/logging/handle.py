@@ -25,7 +25,7 @@ import tqdm
 tqdm_handler = None
 
 
-class TqdmLoggingHandler(logging.Handler):
+class TqdmLoggingHandler(logging.Handler):  # pragma no cover
     """Logging handler that outputs to tqdm"""
 
     def __init__(self, level=logging.NOTSET):
@@ -42,7 +42,7 @@ class TqdmLoggingHandler(logging.Handler):
             raise
 
 
-def setup_logging(level=logging.INFO):
+def setup_logging(level=logging.INFO):  # pragma no cover
     """Sets up logging"""
     tqdm_handler = TqdmLoggingHandler()
 
@@ -53,7 +53,7 @@ def setup_logging(level=logging.INFO):
     )
 
 
-def remove_logger():
+def remove_logger():  # pragma no cover
     """Removes the tqgm logger"""
     if tqdm_handler is not None:
         logging.getLogger().removeHandler(tqdm_handler)

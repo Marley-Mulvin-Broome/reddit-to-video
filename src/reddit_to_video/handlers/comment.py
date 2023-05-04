@@ -9,7 +9,7 @@ from reddit_to_video.video.tts import get_tts_engine
 from reddit_to_video.video.config import VideoConfig
 from reddit_to_video.video.script import VideoScript
 from reddit_to_video.video.scriptelement import ScriptElement
-from reddit_to_video.video.compose import composeCommentVideo
+from reddit_to_video.video.compose import compose_comment_video
 from reddit_to_video.post import Post
 from reddit_to_video.exceptions import ScriptElementTooLongError
 from reddit_to_video.prompts import prompt_bool, prompt_write_file, prompt_preview_vid
@@ -126,11 +126,11 @@ def handle_comment_post(selected_post, config: VideoConfig):
     print("Exporting video...")
     start_time = time.time()
     # export video
-    composeCommentVideo(output_location,
-                        config.settings.background_footage,
-                        script,
-                        config.export_settings,
-                        logger=default_bar_logger('bar'))
+    compose_comment_video(output_location,
+                          config.settings.background_footage,
+                          script,
+                          config.export_settings,
+                          logger=default_bar_logger('bar'))
 
     print(f"Finished exporting video in {time.time() - start_time} seconds")
 

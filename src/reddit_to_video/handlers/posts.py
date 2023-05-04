@@ -12,7 +12,7 @@ from proglog import default_bar_logger
 
 from reddit_to_video.scraping.validator import get_clip_service_from_url, ClipService
 from reddit_to_video.scraping.scraper import download_reddit_video, download_by_service
-from reddit_to_video.video.compose import composeVideoVideo
+from reddit_to_video.video.compose import compose_video_video
 from reddit_to_video.video.scriptelement import ScriptElement
 from reddit_to_video.video.script import VideoScript
 from reddit_to_video.video.config import VideoConfig
@@ -149,11 +149,11 @@ def handle_video_post(posts, config_settings: VideoConfig, end_card_footage: str
 
     start_time = time.time()
 
-    composeVideoVideo(output_location, script,
-                      target_resolution=(
-                          target_resolution.width, target_resolution.height),
-                      export_settings=config_settings.export_settings,
-                      logger=default_bar_logger('bar'))
+    compose_video_video(output_location, script,
+                        target_resolution=(
+                            target_resolution.width, target_resolution.height),
+                        export_settings=config_settings.export_settings,
+                        logger=default_bar_logger('bar'))
 
     print(f"Finished exporting video in {time.time() - start_time} seconds")
 

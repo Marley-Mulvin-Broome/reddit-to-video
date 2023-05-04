@@ -27,7 +27,7 @@ from reddit_to_video.exceptions import EmptyCollectionError, OutputPathValidatio
 from reddit_to_video.audio import normalise_audio_bytes
 
 
-def createCommentClip(script_element: ScriptElement):
+def create_comment_clip(script_element: ScriptElement):
     """Creates a VideoClip from a ScriptElement in the format of a reddit comment"""
     if not is_file(script_element.visual_path):
         raise Exception(
@@ -59,7 +59,7 @@ def createCommentClip(script_element: ScriptElement):
     return img
 
 
-def composeCommentVideo(output_file: str, background_footage: str, script: VideoScript, export_settings: ExportSettings = None, logger=None):
+def compose_comment_video(output_file: str, background_footage: str, script: VideoScript, export_settings: ExportSettings = None, logger=None):
     """Creates a reddit comment video from a VideoScript and a background footage"""
     if not is_file(background_footage):
         raise FileExistsError(
@@ -84,7 +84,7 @@ def composeCommentVideo(output_file: str, background_footage: str, script: Video
     clips = []
 
     for script_element in script.script_elements:
-        clips.append(createCommentClip(script_element))
+        clips.append(create_comment_clip(script_element))
 
     # merge clips into single track
     overlay = concatenate_videoclips(clips).set_position("center", "center")
@@ -98,7 +98,7 @@ def composeCommentVideo(output_file: str, background_footage: str, script: Video
         output_file, logger=logger, **export_settings.unbox())
 
 
-def composeVideoVideo(output_file: str, script: VideoScript, target_resolution: tuple[int, int] = None, normalise_audio: float = None, export_settings: ExportSettings = None, logger=None):
+def compose_video_video(output_file: str, script: VideoScript, target_resolution: tuple[int, int] = None, normalise_audio: float = None, export_settings: ExportSettings = None, logger=None):
     """Creates a post based video from a VideoScript, compiling multiple videos into one"""
     if len(script) == 0:
         raise EmptyCollectionError("composeVideoVideo() script is empty")

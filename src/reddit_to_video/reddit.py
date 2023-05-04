@@ -11,7 +11,7 @@ import logging
 import praw
 
 
-class Reddit:
+class Reddit:  # pragma no cover
     """A wrapper for the praw wrapper of the Reddit API"""
 
     def __init__(self, client_id, client_secret, user_agent, debug=False):

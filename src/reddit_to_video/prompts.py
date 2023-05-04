@@ -29,7 +29,7 @@ Functions:
         and opens the video in default player if yes
 """
 from os import getcwd
-from os.path import exists as path_exists
+from os.path import isfile as file_exists
 from os.path import join as path_join
 
 from reddit_to_video.utility import can_write_to_file, preview_video
@@ -76,11 +76,7 @@ def prompt_int(prompt: str) -> int:
 
 def prompt_str(prompt: str) -> str:
     """Prompts the user to enter a string"""
-    while True:
-        try:
-            return input(prompt)
-        except ValueError:
-            print("Invalid choice")
+    return input(prompt)
 
 
 def prompt_write_file(prompt: str, overwrite=False) -> str:
@@ -88,7 +84,7 @@ def prompt_write_file(prompt: str, overwrite=False) -> str:
     while True:
         file = input(prompt)
 
-        if path_exists(file) and not overwrite:
+        if file_exists(file) and not overwrite:
             print("File already exists, try again")
             continue
 
@@ -104,14 +100,14 @@ def prompt_file(prompt: str) -> str:
     while True:
         file = input(prompt)
 
-        if not path_exists(file):
+        if not file_exists(file):
             print("File not found, try again")
             continue
 
         return file
 
 
-def prompt_preview_vid(output_location: str):
+def prompt_preview_vid(output_location: str):  # pragma: no cover
     """Prompts the user if they want to preview the video"""
     will_preview = prompt_bool("Preview video? (y/n): ")
 
